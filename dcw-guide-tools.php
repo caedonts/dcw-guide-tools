@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       DCW Guide Tools
- * Plugin URI:        https://github.com/surefaze/dcw-guide-tools
+ * Plugin URI:        https://github.com/caedonts/dcw-guide-tools
  * Description:       Equipment finder for the Dependable Coffee &amp; Water buying guides. Renders a multi-step quiz that recommends a system category, exposed as a native Bricks element and a shortcode.
- * Version:           0.1.0
+ * Version:           0.1.1
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Surefaze
@@ -19,7 +19,7 @@ namespace DCW\GuideTools;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 
 /**
  * The GitHub repository this plugin updates from.
@@ -27,7 +27,7 @@ const VERSION = '0.1.0';
  * Public repo, so no access token is stored on the site. Override with the
  * `dcw_guide_tools_github_repo` filter if the repo is ever moved or renamed.
  */
-const GITHUB_REPO = 'surefaze/dcw-guide-tools';
+const GITHUB_REPO = 'caedonts/dcw-guide-tools';
 
 define( __NAMESPACE__ . '\PLUGIN_FILE', __FILE__ );
 define( __NAMESPACE__ . '\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );

@@ -74,8 +74,13 @@
   border-radius: var(--dcw-finder-radius-sm);
 }
 
+/* A <legend> is normally rendered ON the fieldset's border, outside the
+   padding box — which painted the kicker and title above the bone panel
+   instead of inside it. Per the HTML spec a floated legend stops being a
+   "rendered legend", so float disables that special treatment and the
+   legend flows inside the panel like any other child. */
 .dcw-finder__legend {
-  display: block;
+  float: left;
   width: 100%;
   padding: 0;
 }
@@ -613,7 +618,33 @@
   border-radius: 8px;
 }
 
-.dcw-result__call {
+/* Second action, directly under the submit: same pill, outline weight.
+   Mirrors Paper's "Also book a call" button with the arrow pushed to the
+   far edge. */
+.dcw-result__book {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 13px 21px;
+  color: var(--dcw-finder-white);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  transition: border-color var(--dcw-transition, 0.15s ease);
+}
+
+.dcw-result__book:hover,
+.dcw-result__book:focus-visible {
+  color: var(--dcw-finder-white);
+  border-color: var(--dcw-finder-white);
+}
+
+.dcw-result__more {
   margin-top: auto;
   padding-top: 24px;
   color: var(--dcw-finder-white);
@@ -623,8 +654,8 @@
   text-decoration: none;
 }
 
-.dcw-result__call:hover,
-.dcw-result__call:focus-visible {
+.dcw-result__more:hover,
+.dcw-result__more:focus-visible {
   color: var(--dcw-finder-white);
   text-decoration: underline;
 }
@@ -700,30 +731,39 @@
 
 /* Without JS the track cannot slide and the result cannot be computed, so show
    every question stacked and every recommendation in full. The visitor gets a
-   long but complete page instead of a dead component. */
-.dcw-finder:not(.is-ready) .dcw-finder__track {
-  display: block;
-}
+   long but complete page instead of a dead component.
 
-.dcw-finder:not(.is-ready) .dcw-finder__slide + .dcw-finder__slide {
-  margin-top: 16px;
-}
+   Scoped to (scripting: none) so it applies ONLY when JavaScript is genuinely
+   disabled. Keying it off the .is-ready class alone was a bug: FlyingPress
+   delays JS until first interaction, so every visitor briefly (or until they
+   touched the page) saw all five questions stacked and all four result panels
+   at once. A media query is evaluated by the CSS engine before any script
+   runs, delayed or not. */
+@media (scripting: none) {
+  .dcw-finder .dcw-finder__track {
+    display: block;
+  }
 
-.dcw-finder:not(.is-ready) .dcw-finder__progress,
-.dcw-finder:not(.is-ready) .dcw-finder__foot {
-  display: none;
-}
+  .dcw-finder .dcw-finder__slide + .dcw-finder__slide {
+    margin-top: 16px;
+  }
 
-.dcw-finder:not(.is-ready) .dcw-finder__results[hidden] {
-  display: block;
-}
+  .dcw-finder .dcw-finder__progress,
+  .dcw-finder .dcw-finder__foot {
+    display: none;
+  }
 
-.dcw-finder:not(.is-ready) .dcw-result[hidden] {
-  display: flex;
-}
+  .dcw-finder .dcw-finder__results[hidden] {
+    display: block;
+  }
 
-.dcw-finder:not(.is-ready) .dcw-result + .dcw-result {
-  margin-top: 20px;
+  .dcw-finder .dcw-result[hidden] {
+    display: flex;
+  }
+
+  .dcw-finder .dcw-result + .dcw-result {
+    margin-top: 20px;
+  }
 }
 
 

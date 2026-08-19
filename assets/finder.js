@@ -108,13 +108,22 @@
 			}
 		}
 
+		// Paper's Result A always shows a second-best, so until the team
+		// decides otherwise (open question #3 in the finder-logic draft) fall
+		// back to the next-ranked survivor when nothing lands in the window.
+		// Note this makes the window setting cosmetic for now.
+		if ( best && ! also && survivors[ 1 ] ) {
+			also = survivors[ 1 ];
+		}
+
 		return {
 			complete: answered === config.questions.length,
 			scores: scores,
 			eliminated: eliminated,
 			notes: notes,
 			best: best,
-			also: also
+			also: also,
+			survivors: survivors
 		};
 	}
 
@@ -261,7 +270,11 @@
 			var answerEl = step.querySelector( '[data-dcw-step-answer]' );
 
 			step.classList.toggle( 'is-current', i === self.index );
-			step.classList.toggle( 'is-answered', answered && i !== self.index );
+
+			// Answered wins over current: once a question has an answer its
+			// step fills in, even while the visitor is still standing on it
+			// (matters on the last question, which is never left).
+			step.classList.toggle( 'is-answered', answered );
 
 			// Reachable: anywhere already visited, plus the next unanswered one.
 			if ( button ) {
@@ -369,7 +382,19 @@
 		}
 
 		if ( compare ) {
-			compare.href = this.config.compareUrl + '?compare=' + encodeURIComponent( outcome.best + ',' + outcome.also );
+			var pair = outcome.best + ',' + outcome.also;
+			var base = this.config.compareUrl;
+
+			// "?query" after a "#fragment" is not a query — it becomes part of
+			// the fragment and matches no element id. For in-page anchors keep
+			// the plain hash and carry the pair in a data attribute for the
+			// future compare script; for real URLs append a proper query.
+			if ( base.charAt( 0 ) === '#' ) {
+				compare.href = base;
+				compare.setAttribute( 'data-compare-pair', pair );
+			} else {
+				compare.href = base + ( base.indexOf( '?' ) === -1 ? '?' : '&' ) + 'compare=' + encodeURIComponent( pair );
+			}
 		}
 
 		also.hidden = false;

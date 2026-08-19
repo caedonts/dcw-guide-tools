@@ -107,6 +107,14 @@ class Scorer {
 			}
 		}
 
+		// Paper's Result A always shows a second-best, so until the team
+		// decides otherwise (open question #3 in the finder-logic draft) fall
+		// back to the next-ranked survivor when nothing lands in the window.
+		// Mirrored in assets/finder.js — keep both in step.
+		if ( $best && null === $also && isset( $survivors[1] ) ) {
+			$also = $survivors[1];
+		}
+
 		return [
 			'complete'   => (bool) $complete,
 			'scores'     => $scores,
@@ -115,6 +123,7 @@ class Scorer {
 			'best'       => $best,
 			'also'       => $also,
 			'ranked'     => $ranked,
+			'survivors'  => $survivors,
 		];
 	}
 

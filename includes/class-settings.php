@@ -129,7 +129,7 @@ class Settings {
 								<input type="number" min="0" max="20" class="small-text" id="<?php echo esc_attr( $slug ); ?>-window"
 									name="<?php echo esc_attr( $field ); ?>[also_consider_window]"
 									value="<?php echo esc_attr( (string) ( $finder['also_consider_window'] ?? 2 ) ); ?>">
-								<p class="description"><?php esc_html_e( 'Show a runner-up when it is within this many points of the winner. Set to 0 to never show one.', 'dcw-guide-tools' ); ?></p>
+								<p class="description"><?php esc_html_e( 'How close a runner-up must be to count as a close call. Currently cosmetic: per the design, the result always shows the next-best option regardless.', 'dcw-guide-tools' ); ?></p>
 							</td>
 						</tr>
 						<tr>

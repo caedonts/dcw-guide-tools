@@ -287,8 +287,12 @@ class Renderer {
 					<?php endif; ?>
 				</div>
 
-				<a class="dcw-result__call" href="<?php echo esc_url( (string) ( $finder['contact_url'] ?? '/contact/' ) ); ?>">
-					<?php esc_html_e( 'Rather talk it through? Book a call', 'dcw-guide-tools' ); ?> <span aria-hidden="true">&rarr;</span>
+				<a class="dcw-result__book" href="<?php echo esc_url( (string) ( $finder['contact_url'] ?? '/contact/' ) ); ?>">
+					<?php esc_html_e( 'Also book a call', 'dcw-guide-tools' ); ?> <span aria-hidden="true">&rarr;</span>
+				</a>
+
+				<a class="dcw-result__more" href="<?php echo esc_url( (string) ( $finder['explore_url'] ?? '#options' ) ); ?>">
+					<?php esc_html_e( 'Explore more options', 'dcw-guide-tools' ); ?> <span aria-hidden="true">&rarr;</span>
 				</a>
 			</div>
 		</article>
