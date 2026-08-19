@@ -1,0 +1,879 @@
+/**
+ * DCW Guide Tools — finder
+ *
+ * Values are ported from the Paper design ("Guide — Coffee", Finder card State
+ * A and Result A). Colours reference the Bricks global variables so the finder
+ * inherits the site's design system; every var() carries a literal fallback so
+ * the component still renders correctly if it is ever used somewhere those
+ * variables are not defined.
+ *
+ * Authored in px, matching the rest of this project — there is no 10px root
+ * here, so rem would silently rescale.
+ */
+
+.dcw-finder {
+  --dcw-finder-line: var(--dcw-line, #E5E3DB);
+  --dcw-finder-bone: var(--dcw-bone, #F1EFE8);
+  --dcw-finder-navy: var(--dcw-navy, #222061);
+  --dcw-finder-navy-deep: var(--dcw-navy-deep, #191746);
+  --dcw-finder-navy-tint: var(--dcw-navy-tint, #EDEDF5);
+  --dcw-finder-red: var(--dcw-red, #C51E24);
+  --dcw-finder-ink: var(--dcw-ink, #2B2B2B);
+  --dcw-finder-muted: var(--dcw-muted, #6B6B72);
+  --dcw-finder-white: var(--dcw-white, #FFFFFF);
+  --dcw-finder-radius: var(--dcw-radius-card, 35px);
+  --dcw-finder-radius-sm: var(--dcw-radius-card-sm, 25px);
+  --dcw-finder-font: var(--dcw-font-sans, "Manrope", system-ui, sans-serif);
+
+  font-family: var(--dcw-finder-font);
+}
+
+
+/* ---------------------------------------------------------------- Quiz card */
+
+.dcw-finder__card {
+  display: flex;
+  align-items: stretch;
+  gap: 49px;
+  max-width: 979px;
+  margin-inline: auto;
+  padding: 40px;
+  background-color: var(--dcw-finder-white);
+  border: 1px solid var(--dcw-finder-line);
+  border-radius: var(--dcw-finder-radius);
+}
+
+.dcw-finder__stage {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dcw-finder__track {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dcw-finder__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+
+/* ------------------------------------------------------------ Question panel */
+
+.dcw-finder__panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 36px 36px 32px;
+  background-color: var(--dcw-finder-bone);
+  border: 0;
+  border-radius: var(--dcw-finder-radius-sm);
+}
+
+.dcw-finder__legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+}
+
+.dcw-finder__kicker {
+  display: block;
+  color: var(--dcw-finder-red);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dcw-finder__title {
+  display: block;
+  margin-top: 8px;
+  color: var(--dcw-finder-navy);
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 38px;
+  letter-spacing: -0.02em;
+}
+
+
+/* ----------------------------------------------------------------- Answers */
+
+.dcw-finder__options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.dcw-finder__option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background-color: var(--dcw-finder-white);
+  border: 1.5px solid var(--dcw-finder-line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color var(--dcw-transition, 0.15s ease), background-color var(--dcw-transition, 0.15s ease);
+}
+
+.dcw-finder__option:hover {
+  border-color: var(--dcw-finder-navy);
+}
+
+/* The radio stays in the accessibility tree and keeps native keyboard
+   behaviour; only its painted box is replaced. */
+.dcw-finder__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
+.dcw-finder__marker {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background-color: var(--dcw-finder-white);
+  border: 1.5px solid #B9B7AD;
+  border-radius: 999px;
+  transition: border-width var(--dcw-transition, 0.15s ease), border-color var(--dcw-transition, 0.15s ease);
+}
+
+.dcw-finder__option-label {
+  color: var(--dcw-finder-ink);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.dcw-finder__radio:checked ~ .dcw-finder__marker {
+  border-width: 5px;
+  border-color: var(--dcw-finder-navy);
+}
+
+.dcw-finder__radio:checked ~ .dcw-finder__option-label {
+  color: var(--dcw-finder-navy);
+  font-weight: 700;
+}
+
+.dcw-finder__option:has(.dcw-finder__radio:checked) {
+  background-color: var(--dcw-finder-navy-tint);
+  border-color: var(--dcw-finder-navy);
+}
+
+/* Focus lands on the visually hidden input, so the ring has to be drawn on
+   the label instead or it would be invisible. */
+.dcw-finder__option:has(.dcw-finder__radio:focus-visible) {
+  outline: 2px solid var(--dcw-finder-navy);
+  outline-offset: 3px;
+}
+
+
+/* -------------------------------------------------------------- Panel foot */
+
+.dcw-finder__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 26px;
+}
+
+.dcw-finder__back {
+  padding: 0;
+  color: var(--dcw-finder-muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.dcw-finder__back:hover {
+  color: var(--dcw-finder-navy);
+}
+
+.dcw-finder__hint {
+  margin: 0;
+  color: var(--dcw-finder-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: right;
+}
+
+
+/* ---------------------------------------------------------- Progress rail */
+
+.dcw-finder__progress {
+  flex: 0 0 288px;
+  width: 288px;
+  padding: 8px 0 8px 8px;
+}
+
+.dcw-finder__progress-kicker {
+  margin: 0 0 18px;
+  color: var(--dcw-finder-muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dcw-finder__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The connector between steps. Drawn on the list item rather than as a
+   separate node so steps can be added or removed without touching markup. */
+.dcw-finder__step + .dcw-finder__step::before {
+  content: "";
+  display: block;
+  width: 2px;
+  height: 22px;
+  margin-left: 21px;
+  background-color: var(--dcw-finder-line);
+}
+
+.dcw-finder__step--result::before {
+  height: 30px !important;
+  background-color: transparent !important;
+}
+
+.dcw-finder__step-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.dcw-finder__step-btn[disabled] {
+  cursor: default;
+}
+
+.dcw-finder__step-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--dcw-finder-muted);
+  font-size: 13px;
+  font-weight: 800;
+  background-color: var(--dcw-finder-white);
+  border: 1.5px solid var(--dcw-finder-line);
+  border-radius: 999px;
+  transition: border-color var(--dcw-transition, 0.15s ease), color var(--dcw-transition, 0.15s ease);
+}
+
+.dcw-finder__step-icon--result {
+  border-style: dashed;
+  border-color: #B9B7AD;
+}
+
+.dcw-finder__step-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dcw-finder__step-label {
+  color: var(--dcw-finder-muted);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.dcw-finder__step-answer {
+  color: #B9B7AD;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.dcw-finder__step-answer:empty {
+  display: none;
+}
+
+/* Current step */
+.dcw-finder__step.is-current .dcw-finder__step-icon {
+  color: var(--dcw-finder-red);
+  border-width: 2px;
+  border-color: var(--dcw-finder-red);
+}
+
+.dcw-finder__step.is-current .dcw-finder__step-label {
+  color: var(--dcw-finder-navy);
+  font-weight: 800;
+}
+
+/* Answered steps */
+.dcw-finder__step.is-answered .dcw-finder__step-icon {
+  color: var(--dcw-finder-white);
+  background-color: var(--dcw-finder-red);
+  border-color: var(--dcw-finder-red);
+}
+
+.dcw-finder__step.is-answered .dcw-finder__step-label {
+  color: var(--dcw-finder-navy);
+}
+
+.dcw-finder__step-btn:focus-visible {
+  outline: 2px solid var(--dcw-finder-navy);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+.dcw-finder__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+
+/* ------------------------------------------------------------------ Result */
+
+.dcw-finder__results {
+  margin-top: var(--dcw-space-xl, 40px);
+}
+
+.dcw-result {
+  display: flex;
+  align-items: stretch;
+  max-width: 1104px;
+  margin-inline: auto;
+  overflow: clip;
+  background-color: var(--dcw-finder-navy-deep);
+  border-radius: var(--dcw-finder-radius);
+}
+
+.dcw-result__main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dcw-result__top {
+  padding: 44px 40px 34px 48px;
+}
+
+.dcw-result__kicker {
+  margin: 0;
+  color: var(--dcw-finder-red);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dcw-result__kicker--soft {
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.1em;
+}
+
+.dcw-result__title {
+  margin: 10px 0 0;
+  color: var(--dcw-finder-white);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 44px;
+  letter-spacing: -0.02em;
+}
+
+.dcw-result__desc {
+  max-width: 560px;
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.dcw-result__note {
+  max-width: 560px;
+  margin: 14px 0 0;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 21px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-left: 3px solid var(--dcw-finder-red);
+  border-radius: 6px;
+}
+
+.dcw-result__equip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.dcw-result__equip-label {
+  margin-right: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dcw-result__chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+
+.dcw-result__dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  background-color: var(--dcw-result-color, #C25D02);
+  border-radius: 999px;
+}
+
+.dcw-result__chip-text {
+  color: var(--dcw-finder-white);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.dcw-result__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin-top: 26px;
+}
+
+.dcw-result__explore {
+  display: inline-flex;
+  align-items: center;
+  padding: 15px 30px;
+  color: var(--dcw-finder-white);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  text-decoration: none;
+  background-color: var(--dcw-finder-red);
+  border-radius: 999px;
+  transition: background-color var(--dcw-transition, 0.15s ease);
+}
+
+.dcw-result__explore:hover,
+.dcw-result__explore:focus-visible {
+  background-color: var(--dcw-red-deep, #961320);
+  color: var(--dcw-finder-white);
+}
+
+.dcw-result__restart {
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.dcw-result__restart:hover {
+  color: var(--dcw-finder-white);
+}
+
+.dcw-result__also {
+  margin-top: auto;
+  padding: 28px 40px 32px 48px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.dcw-result__also-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.dcw-result__also-head {
+  flex-shrink: 0;
+  width: 230px;
+}
+
+.dcw-result__also-title {
+  margin: 6px 0 0;
+  color: var(--dcw-finder-white);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 30px;
+  letter-spacing: -0.01em;
+}
+
+.dcw-result__also-desc {
+  flex: 1 1 240px;
+  max-width: 340px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.dcw-result__compare {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--dcw-finder-red);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+.dcw-result__compare:hover,
+.dcw-result__compare:focus-visible {
+  color: var(--dcw-finder-white);
+}
+
+
+/* ------------------------------------------------------------- Result form */
+
+.dcw-result__form {
+  display: flex;
+  flex: 0 0 404px;
+  flex-direction: column;
+  width: 404px;
+  padding: 44px 36px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dcw-result__form-title {
+  margin: 0;
+  color: var(--dcw-finder-white);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+.dcw-result__form-sub {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.dcw-result__form-body {
+  margin-top: 22px;
+}
+
+.dcw-result__form-missing {
+  margin: 0;
+  padding: 12px 14px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  line-height: 19px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.dcw-result__call {
+  margin-top: auto;
+  padding-top: 24px;
+  color: var(--dcw-finder-white);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+  text-decoration: none;
+}
+
+.dcw-result__call:hover,
+.dcw-result__call:focus-visible {
+  color: var(--dcw-finder-white);
+  text-decoration: underline;
+}
+
+/* Fluent Forms ships its own light-background styling; these overrides land it
+   on the navy panel. Scoped to the finder so no other form on the site moves. */
+.dcw-result__form .fluentform .ff-el-input--label label,
+.dcw-result__form .fluentform .ff-el-form-check-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--dcw-finder-font);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dcw-result__form .fluentform input[type="text"],
+.dcw-result__form .fluentform input[type="email"],
+.dcw-result__form .fluentform input[type="tel"],
+.dcw-result__form .fluentform textarea,
+.dcw-result__form .fluentform select {
+  height: 46px;
+  padding: 0 16px;
+  color: var(--dcw-finder-white);
+  font-family: var(--dcw-finder-font);
+  font-size: 14px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.dcw-result__form .fluentform textarea {
+  height: auto;
+  padding: 12px 16px;
+  border-radius: 16px;
+}
+
+.dcw-result__form .fluentform input::placeholder,
+.dcw-result__form .fluentform textarea::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.dcw-result__form .fluentform .ff-btn-submit {
+  width: 100%;
+  height: 48px;
+  color: var(--dcw-finder-white);
+  font-family: var(--dcw-finder-font);
+  font-size: 15px;
+  font-weight: 700;
+  background-color: var(--dcw-finder-red);
+  border: 0;
+  border-radius: 999px;
+}
+
+.dcw-result__form .fluentform .ff-btn-submit:hover {
+  background-color: var(--dcw-red-deep, #961320);
+}
+
+
+/* ------------------------------------------------------- Editor-only notice */
+
+.dcw-finder__notice {
+  padding: 16px 20px;
+  color: var(--dcw-finder-ink);
+  font-size: 14px;
+  line-height: 21px;
+  background-color: #FCF9E8;
+  border: 1px dashed #D9C77A;
+  border-radius: 8px;
+}
+
+
+/* --------------------------------------------------------- No-JS behaviour */
+
+/* Without JS the track cannot slide and the result cannot be computed, so show
+   every question stacked and every recommendation in full. The visitor gets a
+   long but complete page instead of a dead component. */
+.dcw-finder:not(.is-ready) .dcw-finder__track {
+  display: block;
+}
+
+.dcw-finder:not(.is-ready) .dcw-finder__slide + .dcw-finder__slide {
+  margin-top: 16px;
+}
+
+.dcw-finder:not(.is-ready) .dcw-finder__progress,
+.dcw-finder:not(.is-ready) .dcw-finder__foot {
+  display: none;
+}
+
+.dcw-finder:not(.is-ready) .dcw-finder__results[hidden] {
+  display: block;
+}
+
+.dcw-finder:not(.is-ready) .dcw-result[hidden] {
+  display: flex;
+}
+
+.dcw-finder:not(.is-ready) .dcw-result + .dcw-result {
+  margin-top: 20px;
+}
+
+
+/* ------------------------------------------------------------- Tablet down */
+
+@media (max-width: 991px) {
+  .dcw-finder__card {
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+  }
+
+  /* The rail becomes a horizontal stepper above the question. Paper has no
+     mobile design for the finder — this is the build's own call. */
+  .dcw-finder__progress {
+    order: -1;
+    flex: 0 0 auto;
+    width: 100%;
+    padding: 0;
+  }
+
+  .dcw-finder__progress-kicker {
+    display: none;
+  }
+
+  .dcw-finder__steps {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .dcw-finder__step {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .dcw-finder__step + .dcw-finder__step::before {
+    display: none;
+  }
+
+  .dcw-finder__step-btn {
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .dcw-finder__step-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .dcw-finder__step-text {
+    align-items: center;
+  }
+
+  .dcw-finder__step-label {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+  }
+
+  .dcw-finder__step-answer {
+    display: none;
+  }
+
+  .dcw-result {
+    flex-direction: column;
+  }
+
+  .dcw-result__form {
+    flex: 1 1 auto;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 0;
+  }
+}
+
+
+/* ------------------------------------------------------------- Mobile down */
+
+@media (max-width: 767px) {
+  .dcw-finder__card {
+    padding: 16px;
+    border-radius: var(--dcw-finder-radius-sm);
+  }
+
+  .dcw-finder__panel {
+    padding: 24px 20px;
+  }
+
+  .dcw-finder__title {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .dcw-finder__option {
+    padding: 14px 16px;
+  }
+
+  .dcw-finder__option-label {
+    font-size: 16px;
+  }
+
+  .dcw-finder__hint {
+    display: none;
+  }
+
+  .dcw-result__top,
+  .dcw-result__also {
+    padding: 28px 20px;
+  }
+
+  .dcw-result__form {
+    padding: 28px 20px;
+  }
+
+  .dcw-result__title {
+    font-size: 30px;
+    line-height: 34px;
+  }
+
+  .dcw-result__also-head {
+    width: 100%;
+  }
+
+  .dcw-result__actions {
+    gap: 16px;
+  }
+
+  .dcw-result__explore {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* --------------------------------------------------------- Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .dcw-finder__track {
+    transition: none;
+  }
+
+  .dcw-finder__option,
+  .dcw-finder__marker,
+  .dcw-finder__step-icon,
+  .dcw-result__explore {
+    transition: none;
+  }
+}
