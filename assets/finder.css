@@ -26,6 +26,21 @@
   --dcw-finder-font: var(--dcw-font-sans, "Manrope", system-ui, sans-serif);
 
   font-family: var(--dcw-finder-font);
+
+  /* Kills the grey/blue flash iOS and Android paint over any element they
+     consider tappable. The finder already shows its own selected state on the
+     option pill, so the platform highlight only ever fought it. Colour rather
+     than `transparent` keyword for the widest support. */
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* The flash is painted on the element that receives the tap, so setting it on
+   the root is not enough — labels and buttons need it in their own right. */
+.dcw-finder label,
+.dcw-finder button,
+.dcw-finder a,
+.dcw-finder input {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 

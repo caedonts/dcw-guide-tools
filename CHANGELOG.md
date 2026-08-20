@@ -9,6 +9,11 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
+### Fixed
+- Suppressed the platform tap-highlight flash on the finder. iOS and Android
+  paint it on whichever element receives the tap, so it is set on the root and
+  on labels, buttons, links and inputs.
+
 ### Changed
 - Asset cache-busting now uses each file's modification time instead of the
   plugin version. Previously `VERSION` was the only thing busting the browser
