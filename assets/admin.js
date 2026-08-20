@@ -86,6 +86,33 @@
 		}
 	}
 
+	// ---------------------------------------------------------------- help
+
+	var helpBtn = root.querySelector( '[data-dcwa-help]' );
+	var helpPanel = root.querySelector( '[data-dcwa-help-panel]' );
+
+	function setHelp( open ) {
+		if ( ! helpBtn || ! helpPanel ) {
+			return;
+		}
+
+		helpBtn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		helpPanel.hidden = ! open;
+	}
+
+	if ( helpBtn ) {
+		helpBtn.addEventListener( 'click', function () {
+			setHelp( 'true' !== helpBtn.getAttribute( 'aria-expanded' ) );
+		} );
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key && 'true' === helpBtn.getAttribute( 'aria-expanded' ) ) {
+				setHelp( false );
+				helpBtn.focus();
+			}
+		} );
+	}
+
 	root.addEventListener( 'click', function ( event ) {
 		var toggle = event.target.closest( '[data-dcwa-toggle]' );
 
@@ -292,6 +319,7 @@
 		if ( head ) {
 			head.querySelectorAll( '.dcwa-matrix__col' ).forEach( function ( col ) {
 				categories.push( {
+					key: col.getAttribute( 'data-dcwa-cat' ) || '',
 					label: col.textContent.trim(),
 					color: col.querySelector( '.dcwa-dot' ) ? col.querySelector( '.dcwa-dot' ).style.background : '#999'
 				} );
@@ -339,7 +367,17 @@
 			}
 		} );
 
-		return { categories: categories, questions: questions };
+		// The chip posts the declared order as hidden inputs. Reading it here
+		// keeps the rail honest: without it the rail broke ties by column
+		// order, which silently agreed with the front end only because the
+		// two happened to match.
+		var tiebreak = [];
+
+		root.querySelectorAll( 'input[name="dcw[tiebreak][]"]' ).forEach( function ( input ) {
+			tiebreak.push( input.value );
+		} );
+
+		return { categories: categories, questions: questions, tiebreak: tiebreak };
 	}
 
 	function buildTest() {
@@ -441,12 +479,30 @@
 			return;
 		}
 
+		// Mirrors Scorer::rank(): points first, then the declared tie-break
+		// order, then column order for anything the order does not name.
+		var rankOf = {};
+
+		model.tiebreak.forEach( function ( key, i ) {
+			rankOf[ key ] = i;
+		} );
+
 		var order = model.categories.map( function ( category, i ) {
 			return i;
 		} );
 
 		order.sort( function ( a, b ) {
-			return totals[ b ] - totals[ a ] || a - b;
+			if ( totals[ a ] !== totals[ b ] ) {
+				return totals[ b ] - totals[ a ];
+			}
+
+			var ra = rankOf[ model.categories[ a ].key ];
+			var rb = rankOf[ model.categories[ b ].key ];
+
+			ra = ra === undefined ? Number.MAX_SAFE_INTEGER : ra;
+			rb = rb === undefined ? Number.MAX_SAFE_INTEGER : rb;
+
+			return ra - rb || a - b;
 		} );
 
 		var survivors = order.filter( function ( i ) {

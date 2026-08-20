@@ -2,7 +2,7 @@
 /**
  * The finder admin screen.
  *
- * A top-level "Coffee Finder" menu rendering the design in
+ * A top-level "Finder Admin" menu rendering the design in
  * Notes/Finder Admin Design.md (Alt B, the Trustwards system): the plugin's own
  * sidebar, a breadcrumb, Save sitting under the title, and one card per
  * question with an editable heading and a scoring matrix.
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Admin {
 
-	public const SLUG      = 'dcw-coffee-finder';
+	public const SLUG      = 'dcw-finder';
 	public const HANDLE    = 'dcw-guide-tools-admin';
 	private const CAP      = 'manage_options';
 	private const NONCE    = 'dcw_guide_tools_save';
@@ -31,14 +31,21 @@ class Admin {
 	}
 
 	public static function menu(): void {
+		/*
+		 * Position 22 puts this directly under Buying Guides. Pages and the
+		 * Buying Guides post type both declare position 20, so WordPress
+		 * bumps Buying Guides past Equipment (21) to resolve the collision —
+		 * 22 clears both without colliding in turn, and stays above
+		 * Comments (25).
+		 */
 		add_menu_page(
-			esc_html__( 'Coffee Finder', 'dcw-guide-tools' ),
-			esc_html__( 'Coffee Finder', 'dcw-guide-tools' ),
+			esc_html__( 'Finder Admin', 'dcw-guide-tools' ),
+			esc_html__( 'Finder Admin', 'dcw-guide-tools' ),
 			self::CAP,
 			self::SLUG,
 			[ self::class, 'screen' ],
 			'dashicons-editor-help',
-			26
+			22
 		);
 	}
 
@@ -309,6 +316,24 @@ class Admin {
 					<span class="dcwa__crumb-mark" aria-hidden="true"></span>
 					<span class="dcwa__crumb-sep" aria-hidden="true">&rsaquo;</span>
 					<span><?php echo esc_html( (string) ( $finder['label'] ?? $slug ) ); ?></span>
+
+					<button
+						type="button"
+						class="dcwa__help"
+						data-dcwa-help
+						aria-expanded="false"
+						aria-controls="dcwa-help-panel"
+					><span aria-hidden="true">?</span><span class="screen-reader-text"><?php esc_html_e( 'How this screen works', 'dcw-guide-tools' ); ?></span></button>
+				</div>
+
+				<div class="dcwa__help-panel" id="dcwa-help-panel" data-dcwa-help-panel hidden>
+					<p class="dcwa__help-title"><?php esc_html_e( 'How this screen works', 'dcw-guide-tools' ); ?></p>
+					<ul>
+						<li><?php esc_html_e( 'Each answer adds points to the systems it suits. The highest total wins, and the runner-up shows as "Also consider".', 'dcw-guide-tools' ); ?></li>
+						<li><?php esc_html_e( 'The water-line question filters instead of scoring: ticking a system rules it out entirely, whatever it scored.', 'dcw-guide-tools' ); ?></li>
+						<li><?php esc_html_e( 'Tie-break order decides equal totals. The system listed first wins the tie.', 'dcw-guide-tools' ); ?></li>
+						<li><?php esc_html_e( 'Test drive scores what is on screen right now, including edits you have not saved. Nothing reaches the site until you press Save.', 'dcw-guide-tools' ); ?></li>
+					</ul>
 				</div>
 
 				<h1 class="dcwa__title">
@@ -472,7 +497,7 @@ class Admin {
 					<div class="dcwa-matrix__head">
 						<span class="dcwa-matrix__lead"><?php esc_html_e( 'Answer', 'dcw-guide-tools' ); ?></span>
 						<?php foreach ( $categories as $key => $category ) : ?>
-							<span class="dcwa-matrix__col">
+							<span class="dcwa-matrix__col" data-dcwa-cat="<?php echo esc_attr( (string) $key ); ?>">
 								<span class="dcwa-dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>"></span>
 								<?php echo esc_html( (string) ( $category['label'] ?? $key ) ); ?>
 							</span>

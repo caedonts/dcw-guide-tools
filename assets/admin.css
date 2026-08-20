@@ -134,6 +134,74 @@
   color: #999999;
 }
 
+/* Paper puts a help affordance at the far right of the crumb row. `margin-left:
+   auto` on a flex child eats all the free space to its left, which pins it to
+   the right edge without the row needing to know how many items precede it. */
+
+.dcwa__help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--dcwa-muted);
+  cursor: pointer;
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 999px;
+  box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa__help:hover {
+  color: var(--dcwa-ink);
+  border-color: #C3CAD3;
+}
+
+.dcwa__help[aria-expanded="true"] {
+  color: #FFFFFF;
+  background: var(--dcwa-blue);
+  border-color: var(--dcwa-blue);
+}
+
+.dcwa__help-panel {
+  max-width: 620px;
+  margin-top: 12px;
+  padding: 16px 18px;
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 8px;
+  box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa__help-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dcwa-ink);
+}
+
+.dcwa__help-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.dcwa__help-panel li {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--dcwa-body);
+}
+
+.dcwa__help-panel li:last-child {
+  margin-bottom: 0;
+}
+
 .dcwa__title {
   margin: 18px 0 0;
   padding: 0;
@@ -821,7 +889,13 @@
   overflow: hidden;
 }
 
+/* `display: block` is load-bearing. This is a <span>, and width and height
+   do not apply to non-replaced inline elements — so the width the script
+   sets was being dropped on the floor and every bar rendered as an empty
+   full-width track. */
+
 .dcwa-bar__fill {
+  display: block;
   height: 6px;
   border-radius: 999px;
 }
