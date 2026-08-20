@@ -9,6 +9,8 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
+## 0.4.0 — 2026-08-20
+
 ### Added
 - Keyboard users choose and commit separately. In a native radio group the
   arrow keys select as they move, so auto-advancing on selection made it
