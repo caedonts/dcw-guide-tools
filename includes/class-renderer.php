@@ -148,6 +148,23 @@ class Renderer {
 					<button type="button" class="dcw-finder__back" data-dcw-back <?php echo 0 === $index ? 'hidden' : ''; ?>>
 						<span aria-hidden="true">&lsaquo;</span> <?php esc_html_e( 'Back', 'dcw-guide-tools' ); ?>
 					</button>
+
+					<?php
+					/*
+					 * Shown only after a KEYBOARD selection, and only to eyes:
+					 * `aria-hidden` because screen readers already hear the
+					 * same thing from the live region, and hearing it twice is
+					 * worse than not hearing it. Sighted keyboard users had no
+					 * cue at all that Enter was the commit — this is that cue.
+					 */
+					?>
+					<p class="dcw-finder__hint" data-dcw-hint aria-hidden="true">
+						<?php
+						echo (int) $index === (int) $total - 1
+							? esc_html__( 'Press Enter to see your result', 'dcw-guide-tools' )
+							: esc_html__( 'Press Enter to lock in your answer', 'dcw-guide-tools' );
+						?>
+					</p>
 				</div>
 			</fieldset>
 		</section>

@@ -243,6 +243,56 @@
   margin-top: 26px;
 }
 
+/* The keyboard hint.
+
+   Hidden by default and revealed only after a keyboard selection — see
+   Finder.prototype.showHint(). It fades in slowly on purpose: it is a nudge
+   for someone who has just discovered that choosing did not advance, not an
+   alert. `visibility` rides along with `opacity` so it is not a hover or click
+   target while invisible, and both are transitioned so the element is still
+   there to fade rather than snapping in from display:none.
+   
+   The element is aria-hidden in the markup: screen readers hear the same
+   sentence from the live region, and twice is worse than once. */
+
+.dcw-finder__hint {
+  margin: 0;
+  color: var(--dcw-finder-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  text-align: right;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    visibility 0s linear 0.45s;
+}
+
+.dcw-finder__hint.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 0.45s ease 0.15s,
+    transform 0.45s ease 0.15s,
+    visibility 0s linear 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dcw-finder__hint {
+    transform: none;
+    transition: opacity 0.01s linear, visibility 0s linear 0.01s;
+  }
+
+  .dcw-finder__hint.is-visible {
+    transform: none;
+    transition: opacity 0.01s linear, visibility 0s linear;
+  }
+}
+
 .dcw-finder__back {
   padding: 0;
   color: var(--dcw-finder-muted);

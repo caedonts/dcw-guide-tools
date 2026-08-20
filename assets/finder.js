@@ -261,6 +261,7 @@
 				self.answerLabel( self.questionFor( input ), input.value ) +
 				( isLast ? ' selected. Press Enter to see your result.' : ' selected. Press Enter to continue.' )
 			);
+			this.showHint();
 			return;
 		}
 
@@ -273,6 +274,23 @@
 		window.setTimeout( function () {
 			self.goTo( self.index + 1 );
 		}, SLIDE_DELAY );
+	};
+
+	/**
+	 * Fade in the "press Enter" nudge on the current slide.
+	 *
+	 * Only ever called from the keyboard branch of onAnswer, so it is the
+	 * sighted-keyboard counterpart to the live-region announcement: someone who
+	 * has just chosen an answer and watched nothing happen. The element is
+	 * aria-hidden, so this adds nothing for screen readers, who already heard
+	 * it.
+	 */
+	Finder.prototype.showHint = function () {
+		var hint = this.slides[ this.index ].querySelector( '[data-dcw-hint]' );
+
+		if ( hint ) {
+			hint.classList.add( 'is-visible' );
+		}
 	};
 
 	/**
@@ -298,6 +316,17 @@
 		this.furthest = Math.max( this.furthest, index );
 
 		this.track.style.transform = 'translateX(-' + ( index * 100 ) + '%)';
+
+		// The nudge belongs to the moment, not the question: clear it whenever
+		// the card moves, including Back, so it never trails onto a slide the
+		// user has not stalled on.
+		this.slides.forEach( function ( slide ) {
+			var hint = slide.querySelector( '[data-dcw-hint]' );
+
+			if ( hint ) {
+				hint.classList.remove( 'is-visible' );
+			}
+		} );
 
 		// Offscreen slides must leave the tab order, or keyboard users tab into
 		// questions they cannot see.

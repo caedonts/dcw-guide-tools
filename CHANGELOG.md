@@ -9,6 +9,15 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
+### Added
+- A "Press Enter to lock in your answer" hint that fades in after a keyboard
+  selection, in the spot the old static hint used to occupy. It is
+  `aria-hidden`: screen readers already hear the same sentence from the live
+  region, so this is purely the cue sighted keyboard users were missing. Reads
+  "Press Enter to see your result" on the last question, and clears whenever
+  the card moves.
+
+
 ## 0.4.0 — 2026-08-20
 
 ### Added
