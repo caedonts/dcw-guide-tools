@@ -379,6 +379,16 @@
   border-radius: var(--dcw-finder-radius);
 }
 
+/* The `display` above is an author declaration, so it outranks the user
+   agent's `[hidden] { display: none }`. Restate the rule at author level or
+   the panels JS marks hidden keep rendering, and every losing category
+   stacks up under the winner. The `@media (scripting: none)` block below
+   deliberately re-shows them and still wins, at `.dcw-finder .dcw-result`. */
+
+.dcw-result[hidden] {
+  display: none;
+}
+
 .dcw-result__main {
   display: flex;
   flex: 1 1 auto;
