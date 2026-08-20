@@ -127,6 +127,20 @@
   text-transform: uppercase;
 }
 
+/* goTo() moves focus here after each slide change so a screen reader lands on
+   the new question and the next Tab starts from the right place. The element
+   is `tabindex="-1"` — it is not in the tab order and nobody can navigate TO
+   it — so the browser's default ring is pure noise. It also renders badly:
+   this is an inline element that wraps onto two lines, and an outline on a
+   multi-line inline box traces each line box separately, which is exactly the
+   stepped, notched shape. Suppressed rather than restyled: a focus-management
+   target is not meant to look focusable. */
+
+.dcw-finder__title:focus {
+  outline: none;
+}
+
+
 .dcw-finder__title {
   display: block;
   margin-top: 8px;
@@ -820,6 +834,16 @@
 
 .dcw-result__form .fluentform .ff-t-cell {
   padding: 0;
+}
+
+/* Each name cell wraps its input in its OWN .ff-el-group, nested inside the
+   row. The rhythm rule above was hitting those too, so the row measured 12px
+   taller than the inputs it contains and the visible gap down to the email
+   field came out as 12 + 12 = 24 — the same as the deliberate gap between the
+   two groups, which flattened the grouping. Only the outer wrappers carry the
+   rhythm. */
+.dcw-result__form .fluentform .ff-t-cell .ff-el-group {
+  margin-bottom: 0;
 }
 
 .dcw-result__form .fluentform input[type="text"],

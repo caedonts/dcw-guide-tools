@@ -17,6 +17,17 @@ deployed by zip — so there is no reason to cut a release per fix.
   "Press Enter to see your result" on the last question, and clears whenever
   the card moves.
 
+### Fixed
+- Field rows in the result form were 24px apart instead of 12. Each name cell
+  wraps its input in its own nested `.ff-el-group`, and the rhythm rule was
+  hitting those too — so the row measured 12px taller than the inputs and the
+  visible gap came out as 12 + 12, matching the deliberate gap between the
+  field group and the CTAs and flattening the grouping.
+- The question title no longer draws a focus ring. `goTo()` focuses it after
+  every slide change for screen readers, but it is `tabindex="-1"` and cannot
+  be navigated to, and an outline on a multi-line inline element traces each
+  line box separately — which is where the stepped, notched shape came from.
+
 
 ## 0.4.0 — 2026-08-20
 
