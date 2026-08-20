@@ -362,7 +362,6 @@ class Renderer {
 
 		return [
 			'slug'       => $slug,
-			'window'     => (int) ( $finder['also_consider_window'] ?? 2 ),
 			'tiebreak'   => array_values( (array) ( $finder['tiebreak'] ?? [] ) ),
 			'compareUrl' => (string) ( $finder['compare_url'] ?? '#compare' ),
 			'categories' => $categories,

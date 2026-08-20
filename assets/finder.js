@@ -97,24 +97,9 @@
 		}
 
 		var best = survivors[ 0 ] || null;
-		var also = null;
 
-		if ( best && survivors[ 1 ] ) {
-			var runnerUp = survivors[ 1 ];
-			var gap = scores[ best ] - scores[ runnerUp ];
-
-			if ( gap <= config.window && scores[ runnerUp ] > 0 ) {
-				also = runnerUp;
-			}
-		}
-
-		// Paper's Result A always shows a second-best, so until the team
-		// decides otherwise (open question #3 in the finder-logic draft) fall
-		// back to the next-ranked survivor when nothing lands in the window.
-		// Note this makes the window setting cosmetic for now.
-		if ( best && ! also && survivors[ 1 ] ) {
-			also = survivors[ 1 ];
-		}
+		// Always offer a second-best. Mirrors Scorer::score() — keep in step.
+		var also = survivors[ 1 ] || null;
 
 		return {
 			complete: answered === config.questions.length,

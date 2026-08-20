@@ -93,27 +93,13 @@ class Scorer {
 		}
 
 		$best = $survivors[0] ?? null;
-		$also = null;
 
-		if ( $best && isset( $survivors[1] ) ) {
-			$window    = (int) ( $finder['also_consider_window'] ?? 2 );
-			$runner_up = $survivors[1];
-			$gap       = ( $scores[ $best ] ?? 0 ) - ( $scores[ $runner_up ] ?? 0 );
-
-			// Shown only when it is genuinely close and actually scored. A
-			// zero-point runner-up is not a real second choice.
-			if ( $gap <= $window && ( $scores[ $runner_up ] ?? 0 ) > 0 ) {
-				$also = $runner_up;
-			}
-		}
-
-		// Paper's Result A always shows a second-best, so until the team
-		// decides otherwise (open question #3 in the finder-logic draft) fall
-		// back to the next-ranked survivor when nothing lands in the window.
-		// Mirrored in assets/finder.js — keep both in step.
-		if ( $best && null === $also && isset( $survivors[1] ) ) {
-			$also = $survivors[1];
-		}
+		// The result panel always offers a second-best (Paper's Result A, and
+		// Caedon's call 2026-08-19). There was a "within N points" window here;
+		// it never changed the outcome once the fallback existed, so it has been
+		// removed rather than left as a knob that does nothing. Recover it from
+		// git history if the team later wants a genuine "only when close" rule.
+		$also = $survivors[1] ?? null;
 
 		return [
 			'complete'   => (bool) $complete,

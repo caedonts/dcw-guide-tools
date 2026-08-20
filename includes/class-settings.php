@@ -65,7 +65,6 @@ class Settings {
 
 			$clean[ $slug ] = [
 				'form_id'              => absint( $values['form_id'] ?? 0 ),
-				'also_consider_window' => max( 0, absint( $values['also_consider_window'] ?? 2 ) ),
 				'explore_url'          => sanitize_text_field( (string) ( $values['explore_url'] ?? '#options' ) ),
 				'compare_url'          => sanitize_text_field( (string) ( $values['compare_url'] ?? '#compare' ) ),
 				'contact_url'          => sanitize_text_field( (string) ( $values['contact_url'] ?? '/contact/' ) ),
@@ -121,15 +120,6 @@ class Settings {
 									<?php endforeach; ?>
 								</select>
 								<p class="description"><?php esc_html_e( 'The Fluent Form shown inside the result panel. Quiz answers are attached to the submission as hidden fields.', 'dcw-guide-tools' ); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row"><label for="<?php echo esc_attr( $slug ); ?>-window"><?php esc_html_e( '"Also consider" window', 'dcw-guide-tools' ); ?></label></th>
-							<td>
-								<input type="number" min="0" max="20" class="small-text" id="<?php echo esc_attr( $slug ); ?>-window"
-									name="<?php echo esc_attr( $field ); ?>[also_consider_window]"
-									value="<?php echo esc_attr( (string) ( $finder['also_consider_window'] ?? 2 ) ); ?>">
-								<p class="description"><?php esc_html_e( 'How close a runner-up must be to count as a close call. Currently cosmetic: per the design, the result always shows the next-best option regardless.', 'dcw-guide-tools' ); ?></p>
 							</td>
 						</tr>
 						<tr>

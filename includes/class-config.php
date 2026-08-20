@@ -115,7 +115,6 @@ class Config {
 				'label'                => __( 'Coffee', 'dcw-guide-tools' ),
 				'taxonomy'             => 'equipment_category',
 				'intro_kicker'         => __( 'Question %1$d of %2$d', 'dcw-guide-tools' ),
-				'also_consider_window' => 2,
 				'tiebreak'             => [ 'bean-to-cup', 'traditional', 'single-cup', 'liquid' ],
 				'explore_url'          => '#options',
 				'compare_url'          => '#compare',
@@ -299,7 +298,6 @@ class Config {
 			'water' => [
 				'label'                => __( 'Water', 'dcw-guide-tools' ),
 				'taxonomy'             => 'equipment_category',
-				'also_consider_window' => 2,
 				'tiebreak'             => [],
 				'explore_url'          => '#options',
 				'compare_url'          => '#compare',
@@ -311,7 +309,6 @@ class Config {
 			'ice'   => [
 				'label'                => __( 'Ice', 'dcw-guide-tools' ),
 				'taxonomy'             => 'equipment_category',
-				'also_consider_window' => 2,
 				'tiebreak'             => [],
 				'explore_url'          => '#options',
 				'compare_url'          => '#compare',
