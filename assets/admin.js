@@ -86,6 +86,130 @@
 		}
 	}
 
+	// ------------------------------------------------------------ tie-break
+
+	var tieWrap = root.querySelector( '[data-dcwa-tiebreak]' );
+	var tieBtn = root.querySelector( '[data-dcwa-tiebreak-toggle]' );
+	var tiePop = root.querySelector( '[data-dcwa-tiebreak-pop]' );
+	var tieList = root.querySelector( '[data-dcwa-tiebreak-list]' );
+	var tieDots = root.querySelector( '[data-dcwa-chip-dots]' );
+
+	function setTiebreak( open ) {
+		if ( ! tieBtn || ! tiePop ) {
+			return;
+		}
+
+		tieBtn.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		tiePop.hidden = ! open;
+	}
+
+	/**
+	 * Mirror the list into the chip's dots and grey out the moves that would
+	 * run off the ends. The posted order is the DOM order of the rows, so
+	 * nothing else has to be written back.
+	 */
+	function syncTiebreak() {
+		if ( ! tieList ) {
+			return;
+		}
+
+		var rows = Array.prototype.slice.call( tieList.querySelectorAll( '[data-dcwa-tiebreak-row]' ) );
+
+		if ( tieDots ) {
+			tieDots.innerHTML = '';
+		}
+
+		rows.forEach( function ( row, i ) {
+			var up = row.querySelector( '[data-dcwa-tiebreak-move="up"]' );
+			var down = row.querySelector( '[data-dcwa-tiebreak-move="down"]' );
+
+			if ( up ) {
+				up.disabled = 0 === i;
+			}
+
+			if ( down ) {
+				down.disabled = i === rows.length - 1;
+			}
+
+			if ( tieDots ) {
+				var source = row.querySelector( '.dcwa-dot' );
+				var dot = document.createElement( 'span' );
+
+				// `.dcwa-dot` is the styled dot component. `.dcwa__dot`, which
+				// this markup used to carry, has never had a rule — which is
+				// why the chip has been showing no dots since 0.2.0.
+				dot.className = 'dcwa-dot';
+				dot.style.background = source ? source.style.background : '#999';
+				tieDots.appendChild( dot );
+			}
+		} );
+	}
+
+	if ( tieBtn ) {
+		tieBtn.addEventListener( 'click', function () {
+			setTiebreak( 'true' !== tieBtn.getAttribute( 'aria-expanded' ) );
+		} );
+
+		// Clicking away closes it. The listener is on the document, so the
+		// guard is "was the click inside my own wrapper".
+		document.addEventListener( 'click', function ( event ) {
+			if ( tieWrap && ! tieWrap.contains( event.target ) ) {
+				setTiebreak( false );
+			}
+		} );
+
+		document.addEventListener( 'keydown', function ( event ) {
+			if ( 'Escape' === event.key && 'true' === tieBtn.getAttribute( 'aria-expanded' ) ) {
+				setTiebreak( false );
+				tieBtn.focus();
+			}
+		} );
+
+		syncTiebreak();
+	}
+
+	if ( tieList ) {
+		tieList.addEventListener( 'click', function ( event ) {
+			var move = event.target.closest( '[data-dcwa-tiebreak-move]' );
+
+			if ( ! move || move.disabled ) {
+				return;
+			}
+
+			var row = move.closest( '[data-dcwa-tiebreak-row]' );
+			var up = 'up' === move.getAttribute( 'data-dcwa-tiebreak-move' );
+			var swap = up ? row.previousElementSibling : row.nextElementSibling;
+
+			if ( ! swap ) {
+				return;
+			}
+
+			if ( up ) {
+				tieList.insertBefore( row, swap );
+			} else {
+				tieList.insertBefore( swap, row );
+			}
+
+			syncTiebreak();
+
+			// Keep the keyboard on the button that was just pressed so it can
+			// be pressed again; if that one is now disabled, hand focus to its
+			// partner rather than dropping it to the top of the document.
+			if ( ! move.disabled ) {
+				move.focus();
+			} else {
+				var partner = row.querySelector( '[data-dcwa-tiebreak-move]:not([disabled])' );
+
+				if ( partner ) {
+					partner.focus();
+				}
+			}
+
+			// Ties are ranked by this order, so the rail's answer can change.
+			scheduleScore();
+		} );
+	}
+
 	// ---------------------------------------------------------------- help
 
 	var helpBtn = root.querySelector( '[data-dcwa-help]' );
@@ -209,7 +333,7 @@
 		}
 
 		if ( event.target.closest( '[data-dcwa-reset]' ) ) {
-			buildTest();
+			buildTest( true );
 			return;
 		}
 
@@ -320,7 +444,9 @@
 			head.querySelectorAll( '.dcwa-matrix__col' ).forEach( function ( col ) {
 				categories.push( {
 					key: col.getAttribute( 'data-dcwa-cat' ) || '',
-					label: col.textContent.trim(),
+					// The visible text is the short name ("Trad."); the rail
+					// wants the full one for its score bars.
+					label: col.getAttribute( 'data-dcwa-label' ) || col.textContent.trim(),
 					color: col.querySelector( '.dcwa-dot' ) ? col.querySelector( '.dcwa-dot' ).style.background : '#999'
 				} );
 			} );
@@ -380,7 +506,16 @@
 		return { categories: categories, questions: questions, tiebreak: tiebreak };
 	}
 
-	function buildTest() {
+	/**
+	 * Rebuild the test-drive fields from the current editor state.
+	 *
+	 * Answers are carried across by default, because this runs on every edit and
+	 * losing the selection each keystroke would make the rail useless. Pass
+	 * `true` to drop them — that is what Reset wants, and why Reset did nothing
+	 * before: it rebuilt the fields and then restored the very answers it was
+	 * meant to clear.
+	 */
+	function buildTest( clear ) {
 		if ( ! testWrap ) {
 			return;
 		}
@@ -388,9 +523,11 @@
 		var model = readModel();
 		var previous = {};
 
-		testWrap.querySelectorAll( 'select' ).forEach( function ( select ) {
-			previous[ select.dataset.q ] = select.value;
-		} );
+		if ( ! clear ) {
+			testWrap.querySelectorAll( 'select' ).forEach( function ( select ) {
+				previous[ select.dataset.q ] = select.value;
+			} );
+		}
 
 		testWrap.innerHTML = '';
 

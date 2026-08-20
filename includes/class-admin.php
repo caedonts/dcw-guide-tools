@@ -413,20 +413,73 @@ class Admin {
 		<?php
 	}
 
+	/**
+	 * The tie-break control.
+	 *
+	 * The order lives in the DOM order of the rows, and each row carries its own
+	 * hidden input — so reordering the list reorders what posts, with no separate
+	 * index to keep in step. The chip's dots mirror the list and are rebuilt by
+	 * the script whenever a row moves.
+	 */
 	private static function render_tiebreak( array $finder ): void {
+		$order      = (array) ( $finder['tiebreak'] ?? [] );
+		$categories = (array) ( $finder['categories'] ?? [] );
 		?>
-		<div class="dcwa__chip">
-			<span class="dcwa__chip-label"><?php esc_html_e( 'Tie-break order', 'dcw-guide-tools' ); ?></span>
-			<span class="dcwa__chip-dots">
-				<?php foreach ( (array) ( $finder['tiebreak'] ?? [] ) as $key ) : ?>
-					<?php $category = $finder['categories'][ $key ] ?? null; ?>
-					<?php if ( $category ) : ?>
-						<input type="hidden" name="dcw[tiebreak][]" value="<?php echo esc_attr( (string) $key ); ?>">
-						<span class="dcwa__dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>" title="<?php echo esc_attr( (string) ( $category['label'] ?? $key ) ); ?>"></span>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</span>
-			<span class="dcwa__chip-hint"><?php esc_html_e( 'breaks equal scores', 'dcw-guide-tools' ); ?></span>
+		<div class="dcwa__tiebreak" data-dcwa-tiebreak>
+			<button
+				type="button"
+				class="dcwa__chip"
+				data-dcwa-tiebreak-toggle
+				aria-expanded="false"
+				aria-controls="dcwa-tiebreak-pop"
+			>
+				<span class="dcwa__chip-label"><?php esc_html_e( 'Tie-break order', 'dcw-guide-tools' ); ?></span>
+				<span class="dcwa__chip-dots" data-dcwa-chip-dots>
+					<?php foreach ( $order as $key ) : ?>
+						<?php $category = $categories[ $key ] ?? null; ?>
+						<?php if ( $category ) : ?>
+							<span class="dcwa-dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>"></span>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</span>
+				<span class="dcwa__chip-caret" aria-hidden="true"><?php self::icon_chevron(); ?></span>
+			</button>
+
+			<div class="dcwa__pop" id="dcwa-tiebreak-pop" data-dcwa-tiebreak-pop hidden>
+				<p class="dcwa__pop-title"><?php esc_html_e( 'Tie-break order', 'dcw-guide-tools' ); ?></p>
+				<p class="dcwa__pop-hint"><?php esc_html_e( 'When two systems score the same, the one higher in this list wins.', 'dcw-guide-tools' ); ?></p>
+
+				<ol class="dcwa__pop-list" data-dcwa-tiebreak-list>
+					<?php foreach ( $order as $key ) : ?>
+						<?php $category = $categories[ $key ] ?? null; ?>
+						<?php if ( ! $category ) : ?>
+							<?php continue; ?>
+						<?php endif; ?>
+						<?php $label = (string) ( $category['label'] ?? $key ); ?>
+						<li class="dcwa__pop-row" data-dcwa-tiebreak-row>
+							<input type="hidden" name="dcw[tiebreak][]" value="<?php echo esc_attr( (string) $key ); ?>">
+							<span class="dcwa-dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>"></span>
+							<span class="dcwa__pop-name"><?php echo esc_html( $label ); ?></span>
+							<span class="dcwa__pop-moves">
+								<button
+									type="button"
+									class="dcwa-icon dcwa-icon--sm dcwa__pop-up"
+									data-dcwa-tiebreak-move="up"
+									aria-label="<?php echo esc_attr( sprintf( /* translators: %s: system name */ __( 'Move %s up', 'dcw-guide-tools' ), $label ) ); ?>"
+								><?php self::icon_chevron(); ?></button>
+								<button
+									type="button"
+									class="dcwa-icon dcwa-icon--sm"
+									data-dcwa-tiebreak-move="down"
+									aria-label="<?php echo esc_attr( sprintf( /* translators: %s: system name */ __( 'Move %s down', 'dcw-guide-tools' ), $label ) ); ?>"
+								><?php self::icon_chevron(); ?></button>
+							</span>
+						</li>
+					<?php endforeach; ?>
+				</ol>
+
+				<p class="dcwa__pop-foot"><?php esc_html_e( 'Takes effect on the front end once you press Save.', 'dcw-guide-tools' ); ?></p>
+			</div>
 		</div>
 		<?php
 	}
@@ -497,9 +550,23 @@ class Admin {
 					<div class="dcwa-matrix__head">
 						<span class="dcwa-matrix__lead"><?php esc_html_e( 'Answer', 'dcw-guide-tools' ); ?></span>
 						<?php foreach ( $categories as $key => $category ) : ?>
-							<span class="dcwa-matrix__col" data-dcwa-cat="<?php echo esc_attr( (string) $key ); ?>">
+							<?php
+							/*
+							 * The head shows the short name so four columns fit
+							 * beside the answer text; `data-dcwa-label` carries
+							 * the full one, because the test-drive rail reads
+							 * these columns to label its score bars and should
+							 * still say "Traditional Brewers" there.
+							 */
+							?>
+							<span
+								class="dcwa-matrix__col"
+								data-dcwa-cat="<?php echo esc_attr( (string) $key ); ?>"
+								data-dcwa-label="<?php echo esc_attr( (string) ( $category['label'] ?? $key ) ); ?>"
+								title="<?php echo esc_attr( (string) ( $category['label'] ?? $key ) ); ?>"
+							>
 								<span class="dcwa-dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>"></span>
-								<?php echo esc_html( (string) ( $category['label'] ?? $key ) ); ?>
+								<?php echo esc_html( (string) ( $category['short'] ?? $category['label'] ?? $key ) ); ?>
 							</span>
 						<?php endforeach; ?>
 						<span class="dcwa-matrix__end"></span>

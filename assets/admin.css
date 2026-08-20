@@ -170,6 +170,9 @@
 
 .dcwa__help-panel {
   max-width: 620px;
+  /* Sits under the button that opens it: `margin-left: auto` on a block with a
+     max-width pushes it to the right edge of the content column. */
+  margin-left: auto;
   margin-top: 12px;
   padding: 16px 18px;
   background: #FFFFFF;
@@ -236,16 +239,36 @@
   background: #0099FE;
 }
 
+/* The tie-break control: a chip that opens a reorderable list. The wrapper is
+   the positioning context for the popover, so the popover hangs off the chip
+   rather than off the action bar. */
+
+.dcwa__tiebreak {
+  position: relative;
+}
+
 .dcwa__chip {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 5px 10px;
+  font-family: inherit;
   font-size: 14px;
+  color: var(--dcwa-ink);
+  cursor: pointer;
   background: #FFFFFF;
   border: 1px solid var(--dcwa-line);
   border-radius: 6px;
   box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa__chip:hover {
+  border-color: #C3CAD3;
+}
+
+.dcwa__chip[aria-expanded="true"] {
+  border-color: var(--dcwa-blue);
+  box-shadow: 0 0 0 1px var(--dcwa-blue);
 }
 
 .dcwa__chip-dots {
@@ -254,9 +277,103 @@
   gap: 4px;
 }
 
-.dcwa__chip-hint {
-  font-size: 12px;
+.dcwa__chip-caret {
+  display: flex;
+  align-items: center;
   color: var(--dcwa-muted);
+}
+
+.dcwa__chip-caret svg {
+  width: 14px;
+  height: 14px;
+}
+
+.dcwa__chip[aria-expanded="true"] .dcwa__chip-caret svg {
+  transform: rotate(180deg);
+}
+
+.dcwa__pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 300px;
+  padding: 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(13, 19, 30, 0.14);
+}
+
+.dcwa__pop-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dcwa-ink);
+}
+
+.dcwa__pop-hint,
+.dcwa__pop-foot {
+  margin: 0;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--dcwa-muted);
+}
+
+.dcwa__pop-list {
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.dcwa__pop-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 6px;
+}
+
+.dcwa__pop-row + .dcwa__pop-row {
+  margin-top: 2px;
+}
+
+.dcwa__pop-row:hover {
+  background: var(--dcwa-ground);
+}
+
+.dcwa__pop-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--dcwa-ink);
+}
+
+/* The first row wins every tie, so it earns the emphasis. */
+.dcwa__pop-row:first-child .dcwa__pop-name {
+  font-weight: 700;
+}
+
+.dcwa__pop-moves {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dcwa__pop-up svg {
+  transform: rotate(180deg);
+}
+
+.dcwa__pop-moves button[disabled] {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.dcwa__pop-foot {
+  padding-top: 10px;
+  border-top: 1px solid var(--dcwa-rule);
 }
 
 .dcwa__empty {

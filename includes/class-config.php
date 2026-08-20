@@ -120,6 +120,10 @@ class Config {
 	 * Coffee scoring comes from Notes/Coffee Finder Logic.md — a draft the team
 	 * is expected to correct. Every number is editable, which is the point.
 	 *
+	 * `label` is the name visitors see. `short` is the admin matrix column head
+	 * only, where four columns have to fit beside the answer text — truncations
+	 * carry a full stop ("Trad."), whole words do not ("Bean").
+	 *
 	 * @return array<string, array>
 	 */
 	private static function defaults(): array {
@@ -137,6 +141,7 @@ class Config {
 				'categories' => [
 					'bean-to-cup' => [
 						'label'    => __( 'Bean-to-Cup', 'dcw-guide-tools' ),
+						'short'    => __( 'Bean', 'dcw-guide-tools' ),
 						'term'     => 'bean-to-cup',
 						'color'    => 'var(--dcw-coffee, #C25D02)',
 						'tagline'  => __( 'Freshly ground coffee, one cup at a time.', 'dcw-guide-tools' ),
@@ -145,6 +150,7 @@ class Config {
 					],
 					'traditional' => [
 						'label'    => __( 'Traditional Brewers', 'dcw-guide-tools' ),
+						'short'    => __( 'Trad.', 'dcw-guide-tools' ),
 						'term'     => 'traditional',
 						'color'    => 'var(--dcw-sys-traditional, #8C4A12)',
 						'tagline'  => __( 'Familiar brewed coffee made for groups.', 'dcw-guide-tools' ),
@@ -153,6 +159,7 @@ class Config {
 					],
 					'single-cup'  => [
 						'label'    => __( 'Single-Cup', 'dcw-guide-tools' ),
+						'short'    => __( 'Single', 'dcw-guide-tools' ),
 						'term'     => 'single-cup',
 						'color'    => 'var(--dcw-sys-single, #E28B3E)',
 						'tagline'  => __( 'More choices, one drink at a time.', 'dcw-guide-tools' ),
@@ -161,6 +168,7 @@ class Config {
 					],
 					'liquid'      => [
 						'label'    => __( 'Liquid Coffee', 'dcw-guide-tools' ),
+						'short'    => __( 'Liquid', 'dcw-guide-tools' ),
 						'term'     => 'liquid',
 						'color'    => 'var(--dcw-sys-liquid, #5A2E0E)',
 						'tagline'  => __( 'Fast, consistent coffee for serious volume.', 'dcw-guide-tools' ),
