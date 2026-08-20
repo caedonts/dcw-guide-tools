@@ -165,6 +165,21 @@
 
 /* The radio stays in the accessibility tree and keeps native keyboard
    behaviour; only its painted box is replaced. */
+/* Available to screen readers, invisible on screen. Same pattern the radios
+   use — clipped rather than display:none, so it is still announced. */
+.dcw-finder__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
 .dcw-finder__radio {
   position: absolute;
   width: 1px;
@@ -658,7 +673,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 8px;
+  /* Same 12px the fields use — the two CTAs are a pair, like the name row and
+     the email field are. */
+  margin-top: 12px;
   padding: 13px 21px;
   color: var(--dcw-finder-white);
   font-size: 15px;
@@ -733,9 +750,16 @@
   margin-bottom: 12px;
 }
 
-/* The submit sits flush; its spacing to "Also book a call" is set on that
-   element instead. */
+/* Two groups, and the spacing says so: the three fields share one rhythm, the
+   two CTAs share the same rhythm, and the break between the groups is wider
+   than either.
+
+   This is a single value, not 12 + something: adjacent sibling margins
+   COLLAPSE to the larger of the two rather than adding up, so the field
+   group's 12px bottom margin and this top margin resolve to whichever is
+   bigger. 24px is the gap; it is not additive with the 12 above it. */
 .dcw-result__form .fluentform .ff_submit_btn_wrapper {
+  margin-top: 24px;
   margin-bottom: 0;
 }
 

@@ -134,6 +134,16 @@ class Renderer {
 					<?php endforeach; ?>
 				</div>
 
+				<?php
+				/*
+				 * Arrow keys select as they move in a native radio group, so
+				 * selection and commit are separate here: Enter advances. That
+				 * is invisible without being told, hence the instruction — it
+				 * sits inside the fieldset so it is read as part of the group.
+				 */
+				?>
+				<p class="dcw-finder__sr"><?php esc_html_e( 'Use the arrow keys to choose an answer, then press Enter to continue.', 'dcw-guide-tools' ); ?></p>
+
 				<div class="dcw-finder__foot">
 					<button type="button" class="dcw-finder__back" data-dcw-back <?php echo 0 === $index ? 'hidden' : ''; ?>>
 						<span aria-hidden="true">&lsaquo;</span> <?php esc_html_e( 'Back', 'dcw-guide-tools' ); ?>

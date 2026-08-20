@@ -136,6 +136,10 @@
 		this.index = 0;
 		this.furthest = 0;
 
+		// Assume keyboard until a pointer proves otherwise. The safe default:
+		// a stray auto-advance is worse than an extra Enter.
+		this.fromPointer = false;
+
 		this.bind();
 		this.root.classList.add( 'is-ready' );
 		this.goTo( 0, { focus: false } );
@@ -144,12 +148,64 @@
 	Finder.prototype.bind = function () {
 		var self = this;
 
+		/*
+		 * Which device chose the answer decides whether choosing it also
+		 * commits to it. Capture phase, because both of these have to land
+		 * before the `change` they precede.
+		 */
+		this.root.addEventListener( 'pointerdown', function () {
+			self.fromPointer = true;
+		}, true );
+
+		this.root.addEventListener( 'keydown', function () {
+			self.fromPointer = false;
+		}, true );
+
 		this.root.addEventListener( 'change', function ( event ) {
 			var input = event.target.closest( '[data-dcw-answer]' );
 
 			if ( input ) {
 				self.onAnswer( input );
 			}
+		} );
+
+		/*
+		 * Enter is the keyboard's commit.
+		 *
+		 * In a native radio group the arrow keys move focus AND select in one
+		 * keystroke, so there is no way to read option two without choosing
+		 * it. Auto-advancing on selection therefore made the quiz impossible
+		 * to browse with a keyboard — WCAG 3.2.2 On Input, a context change
+		 * the user did not ask for. Selection and commit are separate actions
+		 * here: arrows choose, Enter moves on.
+		 */
+		this.root.addEventListener( 'keydown', function ( event ) {
+			if ( 'Enter' !== event.key ) {
+				return;
+			}
+
+			var input = event.target.closest( '[data-dcw-answer]' );
+
+			if ( ! input ) {
+				return;
+			}
+
+			event.preventDefault();
+
+			// Enter on an option that is not chosen yet picks it first. The
+			// radio is set here rather than by the browser, so no `change`
+			// fires and onAnswer has to be called directly.
+			if ( ! input.checked ) {
+				input.checked = true;
+				self.onAnswer( input );
+			}
+
+			if ( self.index === self.slides.length - 1 ) {
+				self.evaluate();
+				return;
+			}
+
+			self.goTo( self.index + 1 );
 		} );
 
 		this.root.addEventListener( 'click', function ( event ) {
@@ -190,6 +246,24 @@
 		var isLast = this.index === this.slides.length - 1;
 		var self = this;
 
+		/*
+		 * Only a pointer commits by choosing. A keyboard user is still moving
+		 * through the options at this point — see the Enter handler in bind()
+		 * for why — so the answer is recorded and the stepper updated, but
+		 * nothing else happens until they say so.
+		 *
+		 * This has to come BEFORE the last-question branch. Revealing the
+		 * result is a commit too: without this, arrowing through question five
+		 * would flip the result panel between categories on every keystroke.
+		 */
+		if ( ! this.fromPointer ) {
+			this.announce(
+				self.answerLabel( self.questionFor( input ), input.value ) +
+				( isLast ? ' selected. Press Enter to see your result.' : ' selected. Press Enter to continue.' )
+			);
+			return;
+		}
+
 		if ( isLast ) {
 			this.evaluate();
 			return;
@@ -199,6 +273,18 @@
 		window.setTimeout( function () {
 			self.goTo( self.index + 1 );
 		}, SLIDE_DELAY );
+	};
+
+	/**
+	 * The config entry for the question an input belongs to.
+	 */
+	Finder.prototype.questionFor = function ( input ) {
+		var id = input.getAttribute( 'data-question' );
+		var match = this.config.questions.filter( function ( q ) {
+			return q.id === id;
+		} );
+
+		return match[ 0 ] || { answers: [] };
 	};
 
 	Finder.prototype.goTo = function ( index, options ) {

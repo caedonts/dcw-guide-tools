@@ -19,6 +19,15 @@ deployed by zip — so there is no reason to cut a release per fix.
   as soon as someone types). Tighter rhythm between fields, and between the
   submit and "Also book a call".
 
+### Added
+- Keyboard users choose and commit separately. In a native radio group the
+  arrow keys select as they move, so auto-advancing on selection made it
+  impossible to read the second option without committing to it (WCAG 3.2.2 On
+  Input). Pointer input still commits by choosing; keyboard selection records
+  the answer and waits for Enter, including on the last question where
+  committing means revealing the result. A screen-reader-only line in each
+  question says so, and the live region confirms each selection.
+
 ### Removed
 - The per-question hint line ("Answering moves you to the next question." /
   "This one filters the options rather than scoring them.").
