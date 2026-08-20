@@ -58,10 +58,20 @@
   border-radius: var(--dcw-finder-radius);
 }
 
+/* The bone panel is painted HERE, on the static clipping box, not on each
+   slide. It used to live on .dcw-finder__panel, which meant every transition
+   dragged a rounded-cornered box across the viewport — you could watch its
+   corners sweep past at the top and bottom. Now the box never moves; the
+   content slides inside it, and `overflow: hidden` on the same element as the
+   radius means the rounded corners do the clipping. */
+
 .dcw-finder__stage {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
+  padding: 36px 36px 32px;
+  background-color: var(--dcw-finder-bone);
+  border-radius: var(--dcw-finder-radius-sm);
 }
 
 .dcw-finder__track {
@@ -78,15 +88,18 @@
 
 /* ------------------------------------------------------------ Question panel */
 
+/* Transparent: the panel is now just a fieldset for grouping and a flex
+   column for layout. Its former skin lives on .dcw-finder__stage. */
+
 .dcw-finder__panel {
   display: flex;
   flex-direction: column;
   height: 100%;
   margin: 0;
-  padding: 36px 36px 32px;
-  background-color: var(--dcw-finder-bone);
+  padding: 0;
+  background-color: transparent;
   border: 0;
-  border-radius: var(--dcw-finder-radius-sm);
+  border-radius: 0;
 }
 
 /* A <legend> is normally rendered ON the fieldset's border, outside the
@@ -630,7 +643,7 @@
 }
 
 .dcw-result__form-body {
-  margin-top: 22px;
+  margin-top: 18px;
 }
 
 .dcw-result__form-missing {
@@ -651,7 +664,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 10px;
+  margin-top: 8px;
   padding: 13px 21px;
   color: var(--dcw-finder-white);
   font-size: 15px;
@@ -687,12 +700,52 @@
 
 /* Fluent Forms ships its own light-background styling; these overrides land it
    on the navy panel. Scoped to the finder so no other form on the site moves. */
-.dcw-result__form .fluentform .ff-el-input--label label,
+
+/* Labels are visually hidden, not removed. Paper puts the field name inside
+   the field, so the placeholder carries the visible cue — but a placeholder is
+   a weak accessible name and vanishes the moment someone types, so the real
+   <label> stays in the DOM and stays associated. Fluent Forms' own
+   "Hidden" label placement deletes the element outright, which is why it is
+   not used here. */
+.dcw-result__form .fluentform .ff-el-input--label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  border: 0;
+}
+
 .dcw-result__form .fluentform .ff-el-form-check-label {
   color: rgba(255, 255, 255, 0.85);
   font-family: var(--dcw-finder-font);
   font-size: 13px;
   font-weight: 600;
+}
+
+/* With the labels gone the default 20px gutter between groups reads as a lot
+   of empty navy. */
+.dcw-result__form .fluentform .ff-el-group {
+  margin-bottom: 10px;
+}
+
+.dcw-result__form .fluentform .ff-el-group:last-child,
+.dcw-result__form .fluentform .ff-el-group.ff-text-left,
+.dcw-result__form .fluentform .ff_submit_btn_wrapper {
+  margin-bottom: 0;
+}
+
+/* The name row's two columns. */
+.dcw-result__form .fluentform .ff-t-container {
+  gap: 10px;
+}
+
+.dcw-result__form .fluentform .ff-t-cell {
+  padding: 0;
 }
 
 .dcw-result__form .fluentform input[type="text"],
@@ -876,7 +929,8 @@
     border-radius: var(--dcw-finder-radius-sm);
   }
 
-  .dcw-finder__panel {
+  /* Padding follows the background onto the stage. */
+  .dcw-finder__stage {
     padding: 24px 20px;
   }
 

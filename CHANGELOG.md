@@ -9,6 +9,16 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
+### Changed
+- The quiz's bone panel is painted on the static stage instead of on each
+  slide, so a transition no longer drags a rounded box across the viewport —
+  only the content moves, and the stage's rounded corners clip it.
+- The result form reads as Paper draws it: field names sit inside the fields as
+  placeholders and the labels are visually hidden (kept in the DOM and
+  associated, because a placeholder is a weak accessible name that disappears
+  as soon as someone types). Tighter rhythm between fields, and between the
+  submit and "Also book a call".
+
 ### Fixed
 - Suppressed the platform tap-highlight flash on the finder. iOS and Android
   paint it on whichever element receives the tap, so it is set on the root and
