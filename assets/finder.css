@@ -818,18 +818,16 @@
     font-size: 12px;
   }
 
+  /* Circles only on small screens (Caedon, 2026-08-19). Visually hidden
+     rather than display:none so every step button keeps its accessible
+     name — a button announcing just "1" tells a screen reader nothing. */
   .dcw-finder__step-text {
-    align-items: center;
-  }
-
-  .dcw-finder__step-label {
-    font-size: 11px;
-    font-weight: 600;
-    line-height: 14px;
-  }
-
-  .dcw-finder__step-answer {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 
   .dcw-result {
