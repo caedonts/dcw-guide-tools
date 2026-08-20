@@ -355,20 +355,78 @@
   font-weight: 700;
 }
 
-.dcwa__pop-moves {
+/* ------------------------------------------------------------ Drag handle */
+
+.dcwa-grip {
   display: flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  width: 22px;
+  height: 26px;
   flex-shrink: 0;
+  padding: 0;
+  color: #B4BAC3;
+  cursor: grab;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  /* Without this the browser claims the gesture for scrolling and the
+     pointermove stream stops as soon as the drag goes vertical. */
+  touch-action: none;
 }
 
-.dcwa__pop-up svg {
-  transform: rotate(180deg);
+.dcwa-grip:hover {
+  color: var(--dcwa-muted);
+  background: var(--dcwa-ground);
 }
 
-.dcwa__pop-moves button[disabled] {
-  opacity: 0.3;
-  cursor: default;
+.dcwa-grip:focus-visible {
+  color: var(--dcwa-blue);
+  outline: 2px solid var(--dcwa-blue);
+  outline-offset: 1px;
+}
+
+.dcwa-grip:active {
+  cursor: grabbing;
+}
+
+.dcwa-grip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dcwa-grip--card {
+  margin-left: -6px;
+}
+
+/* The item being dragged rides above its neighbours and loses its transition,
+   so it tracks the cursor exactly. */
+
+[data-dcwa-sort-item].is-dragging {
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 8px 20px rgba(13, 19, 30, 0.16);
+  cursor: grabbing;
+}
+
+.dcwa__pop-row.is-dragging {
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+}
+
+/* While a drag is running, nothing in the list should be selectable and the
+   hover states would only flicker. */
+
+.is-sorting {
+  user-select: none;
+}
+
+.is-sorting .dcwa__pop-row:hover {
+  background: none;
+}
+
+.is-sorting .dcwa-card:not(.is-open) {
+  cursor: grabbing;
 }
 
 .dcwa__pop-foot {

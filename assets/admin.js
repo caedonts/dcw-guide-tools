@@ -60,6 +60,184 @@
 		return el.closest( '[data-dcwa-card]' );
 	}
 
+	// ------------------------------------------------------------- sortable
+
+	/**
+	 * Drag-to-reorder for a list, driven from a handle inside each item.
+	 *
+	 * Pointer events rather than HTML5 drag-and-drop: these lists are full of
+	 * text inputs, and `draggable` on an ancestor fights text selection inside
+	 * them. Starting only from the handle avoids that entirely, and the same
+	 * handle answers the arrow keys so the list is still reorderable from the
+	 * keyboard.
+	 *
+	 * The reorder is a real DOM move, live, as you cross a neighbour. That
+	 * matters here: for both lists the posted order IS the document order, so
+	 * moving the node is the edit — there is no separate model to write back.
+	 *
+	 * @param {Element}  list     Container.
+	 * @param {Function} onChange Called after any move settles.
+	 */
+	function makeSortable( list, onChange ) {
+		var dragging = null;
+		var pointerStart = 0;
+		var moved = false;
+
+		function items() {
+			return Array.prototype.filter.call(
+				list.children,
+				function ( el ) {
+					return el.matches( '[data-dcwa-sort-item]' );
+				}
+			);
+		}
+
+		function stop() {
+			document.removeEventListener( 'pointermove', onMove );
+			document.removeEventListener( 'pointerup', stop );
+			document.removeEventListener( 'pointercancel', stop );
+
+			if ( ! dragging ) {
+				return;
+			}
+
+			dragging.style.transform = '';
+			dragging.classList.remove( 'is-dragging' );
+			list.classList.remove( 'is-sorting' );
+			dragging = null;
+
+			if ( moved ) {
+				onChange();
+			}
+		}
+
+		list.addEventListener( 'pointerdown', function ( event ) {
+			var handle = event.target.closest( '[data-dcwa-sort-handle]' );
+
+			if ( ! handle || 0 !== event.button ) {
+				return;
+			}
+
+			var item = handle.closest( '[data-dcwa-sort-item]' );
+
+			if ( ! item || item.parentElement !== list ) {
+				return;
+			}
+
+			// Stops the browser turning the drag into a text selection — which
+			// also suppresses the focus a click would normally give the
+			// button, so take focus explicitly and keep the keyboard path
+			// reachable after a mouse grab.
+			event.preventDefault();
+			handle.focus();
+
+			dragging = item;
+			pointerStart = event.clientY;
+			moved = false;
+
+			item.classList.add( 'is-dragging' );
+			list.classList.add( 'is-sorting' );
+
+			// Bound on the document, not the list: the cursor routinely leaves
+			// the list mid-drag (it is only ~300px tall in the popover), and
+			// list-bound listeners would simply stop hearing about it. This is
+			// also why pointer capture is not used — the document sees
+			// everything without it.
+			document.addEventListener( 'pointermove', onMove );
+			document.addEventListener( 'pointerup', stop );
+			document.addEventListener( 'pointercancel', stop );
+		} );
+
+		function onMove( event ) {
+			if ( ! dragging ) {
+				return;
+			}
+
+			var delta = event.clientY - pointerStart;
+
+			dragging.style.transform = 'translateY(' + delta + 'px)';
+
+			// The rect already includes the transform, so this is where the
+			// item visually is, not where it started.
+			var rect = dragging.getBoundingClientRect();
+			var middle = rect.top + rect.height / 2;
+			var siblings = items();
+			var index = siblings.indexOf( dragging );
+			var before = siblings[ index - 1 ];
+			var after = siblings[ index + 1 ];
+			var swapped = false;
+
+			// Swap as soon as the dragged item's middle passes a neighbour's.
+			if ( before ) {
+				var br = before.getBoundingClientRect();
+
+				if ( middle < br.top + br.height / 2 ) {
+					list.insertBefore( dragging, before );
+					swapped = true;
+				}
+			}
+
+			if ( ! swapped && after ) {
+				var ar = after.getBoundingClientRect();
+
+				if ( middle > ar.top + ar.height / 2 ) {
+					// A null second argument appends, which is exactly what is
+					// wanted when `after` is the last item.
+					list.insertBefore( dragging, after.nextElementSibling );
+					swapped = true;
+				}
+			}
+
+			if ( swapped ) {
+				// The node just jumped to a new slot, so re-anchor the drag to
+				// the cursor's current position rather than letting the old
+				// offset yank it away from the pointer.
+				pointerStart = event.clientY;
+				dragging.style.transform = '';
+				moved = true;
+			}
+		}
+
+		// Keyboard: the handle is focusable, so arrows move the item.
+		list.addEventListener( 'keydown', function ( event ) {
+			var handle = event.target.closest( '[data-dcwa-sort-handle]' );
+
+			if ( ! handle ) {
+				return;
+			}
+
+			var up = 'ArrowUp' === event.key;
+			var down = 'ArrowDown' === event.key;
+
+			if ( ! up && ! down ) {
+				return;
+			}
+
+			var item = handle.closest( '[data-dcwa-sort-item]' );
+			var siblings = items();
+			var index = siblings.indexOf( item );
+			var swap = up ? siblings[ index - 1 ] : siblings[ index + 1 ];
+
+			if ( ! swap ) {
+				return;
+			}
+
+			event.preventDefault();
+
+			if ( up ) {
+				list.insertBefore( item, swap );
+			} else {
+				list.insertBefore( swap, item );
+			}
+
+			onChange();
+
+			// insertBefore keeps the node, so the handle keeps its focus, but
+			// re-asserting it survives anything onChange re-renders.
+			handle.focus();
+		} );
+	}
+
 	// ----------------------------------------------------------- accordion
 
 	/**
@@ -119,18 +297,7 @@
 			tieDots.innerHTML = '';
 		}
 
-		rows.forEach( function ( row, i ) {
-			var up = row.querySelector( '[data-dcwa-tiebreak-move="up"]' );
-			var down = row.querySelector( '[data-dcwa-tiebreak-move="down"]' );
-
-			if ( up ) {
-				up.disabled = 0 === i;
-			}
-
-			if ( down ) {
-				down.disabled = i === rows.length - 1;
-			}
-
+		rows.forEach( function ( row ) {
 			if ( tieDots ) {
 				var source = row.querySelector( '.dcwa-dot' );
 				var dot = document.createElement( 'span' );
@@ -169,44 +336,23 @@
 	}
 
 	if ( tieList ) {
-		tieList.addEventListener( 'click', function ( event ) {
-			var move = event.target.closest( '[data-dcwa-tiebreak-move]' );
-
-			if ( ! move || move.disabled ) {
-				return;
-			}
-
-			var row = move.closest( '[data-dcwa-tiebreak-row]' );
-			var up = 'up' === move.getAttribute( 'data-dcwa-tiebreak-move' );
-			var swap = up ? row.previousElementSibling : row.nextElementSibling;
-
-			if ( ! swap ) {
-				return;
-			}
-
-			if ( up ) {
-				tieList.insertBefore( row, swap );
-			} else {
-				tieList.insertBefore( swap, row );
-			}
-
+		makeSortable( tieList, function () {
+			// The chip mirrors the list, and ties are ranked by this order, so
+			// the rail's answer can change.
 			syncTiebreak();
-
-			// Keep the keyboard on the button that was just pressed so it can
-			// be pressed again; if that one is now disabled, hand focus to its
-			// partner rather than dropping it to the top of the document.
-			if ( ! move.disabled ) {
-				move.focus();
-			} else {
-				var partner = row.querySelector( '[data-dcwa-tiebreak-move]:not([disabled])' );
-
-				if ( partner ) {
-					partner.focus();
-				}
-			}
-
-			// Ties are ranked by this order, so the rail's answer can change.
 			scheduleScore();
+		} );
+	}
+
+	var questionList = root.querySelector( '[data-dcwa-questions]' );
+
+	if ( questionList ) {
+		makeSortable( questionList, function () {
+			// reindex() rewrites dcw[questions][N] from document order, so the
+			// posted array matches what is on screen. Without it a reorder
+			// would save the questions in their old slots.
+			reindex();
+			buildTest();
 		} );
 	}
 
@@ -489,7 +635,18 @@
 			} );
 
 			if ( answers.length ) {
-				questions.push( { title: title.value.trim(), gate: isGate, answers: answers } );
+				var idField = card.querySelector( '.dcwa-card__head [name$="[id]"]' );
+
+				questions.push( {
+					// Identity, so the test drive can keep its answers pinned
+					// to the right question when the cards are reordered.
+					// A brand new question has no id until it is saved, so it
+					// falls back to its position.
+					id: idField && idField.value ? idField.value : 'pos:' + questions.length,
+					title: title.value.trim(),
+					gate: isGate,
+					answers: answers
+				} );
 			}
 		} );
 
@@ -525,7 +682,7 @@
 
 		if ( ! clear ) {
 			testWrap.querySelectorAll( 'select' ).forEach( function ( select ) {
-				previous[ select.dataset.q ] = select.value;
+				previous[ select.dataset.qid ] = select.value;
 			} );
 		}
 
@@ -544,6 +701,7 @@
 			var select = document.createElement( 'select' );
 
 			select.dataset.q = String( qi );
+			select.dataset.qid = question.id;
 
 			var blank = document.createElement( 'option' );
 
@@ -559,8 +717,8 @@
 				select.appendChild( option );
 			} );
 
-			if ( previous[ qi ] !== undefined ) {
-				select.value = previous[ qi ];
+			if ( previous[ question.id ] !== undefined ) {
+				select.value = previous[ question.id ];
 			}
 
 			select.addEventListener( 'change', score );

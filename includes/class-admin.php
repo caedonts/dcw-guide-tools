@@ -449,31 +449,30 @@ class Admin {
 				<p class="dcwa__pop-title"><?php esc_html_e( 'Tie-break order', 'dcw-guide-tools' ); ?></p>
 				<p class="dcwa__pop-hint"><?php esc_html_e( 'When two systems score the same, the one higher in this list wins.', 'dcw-guide-tools' ); ?></p>
 
-				<ol class="dcwa__pop-list" data-dcwa-tiebreak-list>
+				<ol class="dcwa__pop-list" data-dcwa-tiebreak-list data-dcwa-sort="tiebreak">
 					<?php foreach ( $order as $key ) : ?>
 						<?php $category = $categories[ $key ] ?? null; ?>
 						<?php if ( ! $category ) : ?>
 							<?php continue; ?>
 						<?php endif; ?>
 						<?php $label = (string) ( $category['label'] ?? $key ); ?>
-						<li class="dcwa__pop-row" data-dcwa-tiebreak-row>
+						<li class="dcwa__pop-row" data-dcwa-sort-item data-dcwa-tiebreak-row>
 							<input type="hidden" name="dcw[tiebreak][]" value="<?php echo esc_attr( (string) $key ); ?>">
+							<?php
+							/*
+							 * The handle is a real button, not a decorative
+							 * grip: it takes focus and answers the arrow keys,
+							 * so the list stays reorderable without a mouse.
+							 */
+							?>
+							<button
+								type="button"
+								class="dcwa-grip"
+								data-dcwa-sort-handle
+								aria-label="<?php echo esc_attr( sprintf( /* translators: %s: system name */ __( 'Reorder %s. Use the up and down arrow keys.', 'dcw-guide-tools' ), $label ) ); ?>"
+							><?php self::icon_grip(); ?></button>
 							<span class="dcwa-dot" style="background:<?php echo esc_attr( (string) ( $category['color'] ?? '#999' ) ); ?>"></span>
 							<span class="dcwa__pop-name"><?php echo esc_html( $label ); ?></span>
-							<span class="dcwa__pop-moves">
-								<button
-									type="button"
-									class="dcwa-icon dcwa-icon--sm dcwa__pop-up"
-									data-dcwa-tiebreak-move="up"
-									aria-label="<?php echo esc_attr( sprintf( /* translators: %s: system name */ __( 'Move %s up', 'dcw-guide-tools' ), $label ) ); ?>"
-								><?php self::icon_chevron(); ?></button>
-								<button
-									type="button"
-									class="dcwa-icon dcwa-icon--sm"
-									data-dcwa-tiebreak-move="down"
-									aria-label="<?php echo esc_attr( sprintf( /* translators: %s: system name */ __( 'Move %s down', 'dcw-guide-tools' ), $label ) ); ?>"
-								><?php self::icon_chevron(); ?></button>
-							</span>
 						</li>
 					<?php endforeach; ?>
 				</ol>
@@ -488,7 +487,7 @@ class Admin {
 		$categories = (array) $finder['categories'];
 		$questions  = (array) $finder['questions'];
 		?>
-		<div class="dcwa__questions" data-dcwa-questions>
+		<div class="dcwa__questions" data-dcwa-questions data-dcwa-sort="questions">
 			<?php foreach ( $questions as $index => $question ) : ?>
 				<?php self::render_question_card( (int) $index, (array) $question, $categories, 0 === (int) $index ); ?>
 			<?php endforeach; ?>
@@ -507,8 +506,15 @@ class Admin {
 		$is_gate = 'gate' === $type;
 		$name    = 'dcw[questions][' . $index . ']';
 		?>
-		<section class="dcwa-card <?php echo $open ? 'is-open' : ''; ?>" data-dcwa-card>
+		<section class="dcwa-card <?php echo $open ? 'is-open' : ''; ?>" data-dcwa-card data-dcwa-sort-item>
 			<header class="dcwa-card__head">
+				<button
+					type="button"
+					class="dcwa-grip dcwa-grip--card"
+					data-dcwa-sort-handle
+					aria-label="<?php esc_attr_e( 'Reorder question. Use the up and down arrow keys.', 'dcw-guide-tools' ); ?>"
+				><?php self::icon_grip(); ?></button>
+
 				<span class="dcwa-card__num" data-dcwa-num><?php echo esc_html( (string) ( $index + 1 ) ); ?></span>
 
 				<?php
@@ -837,6 +843,10 @@ class Admin {
 
 	private static function icon_chevron(): void {
 		echo '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+	}
+
+	private static function icon_grip(): void {
+		echo '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 9h10M7 15h10"/></svg>';
 	}
 
 	private static function icon_pencil(): void {
