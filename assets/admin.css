@@ -240,11 +240,37 @@
 
 /* ---------------------------------------------------------- Question card */
 
+/* Paper stacks the cards on a 12px gap — the same rhythm as .dcwa__main, so
+   the space above "Add question" matches the space between the questions. */
+
+.dcwa__questions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .dcwa-card {
   background: #FFFFFF;
   border: 1px solid var(--dcwa-line);
   border-radius: 8px;
   box-shadow: var(--dcwa-shadow);
+}
+
+/* The whole card is the toggle while it is closed; once it is open only the
+   header row is, so clicks in the matrix stay in the matrix. The chevron
+   button remains the real control (it is what a keyboard reaches and what
+   carries aria-expanded) — this is just the mouse target around it. */
+
+.dcwa-card:not(.is-open) {
+  cursor: pointer;
+}
+
+.dcwa-card:not(.is-open):hover {
+  border-color: #C3CAD3;
+}
+
+.dcwa-card.is-open .dcwa-card__head {
+  cursor: pointer;
 }
 
 .dcwa-card__head {
@@ -286,31 +312,60 @@
   color: var(--dcwa-ink);
 }
 
-/* The editable heading. Reads as a heading until you reach for it, then
-   behaves like the field it is. */
-.dcwa-card__title {
+/* The heading. Closed it is a heading and nothing else: no box, no tab stop,
+   and no pointer events, so the click falls through to the card and opens it.
+   Open, it becomes the field it always was.
+
+   Note the qualified selectors. wp-admin's forms.css styles `input[type="text"]`,
+   which is (0,1,1) — a type selector plus an attribute selector — so a bare
+   `.dcwa-card__title` at (0,1,0) loses, and WordPress's grey 2px-radius box
+   paints over the transparent border asked for here. `.dcwa input.dcwa-card__title`
+   is (0,2,1) and wins on specificity rather than on load order.
+
+   Sizes are Paper's: 18px as a heading, 17px inside the box. */
+
+.dcwa input.dcwa-card__title {
   flex: 1 1 auto;
   min-width: 0;
-  height: 44px;
-  padding: 0 14px;
+  height: 28px;
+  /* wp-admin sets `min-height: 40px` on every text input, and min-height
+     clamps height upward no matter what height says. Outranking a rule only
+     settles the properties you actually declare — anything left undeclared
+     still lands. */
+  min-height: 0;
+  padding: 0;
   font-family: inherit;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 25px;
   letter-spacing: -0.01em;
   color: var(--dcwa-ink);
-  background: #FFFFFF;
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
+  box-shadow: none;
+  pointer-events: none;
 }
 
-.dcwa-card.is-open .dcwa-card__title {
+.dcwa .dcwa-card.is-open input.dcwa-card__title {
+  height: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 17px;
+  line-height: 23px;
+  background: #FFFFFF;
   border-color: #8C8F94;
+  pointer-events: auto;
 }
 
-.dcwa-card__title:focus {
+/* Has to outrank both the is-open rule above (0,4,1) and wp-admin's own
+   `input[type="text"]:focus` (0,2,1), hence the full stack. */
+
+.dcwa .dcwa-card.is-open input.dcwa-card__title:focus {
   border-color: var(--dcwa-blue);
   outline: 2px solid rgba(17, 168, 255, 0.25);
   outline-offset: 0;
+  box-shadow: none;
 }
 
 .dcwa-card__body {

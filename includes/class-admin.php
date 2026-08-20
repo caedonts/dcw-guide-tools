@@ -433,12 +433,21 @@ class Admin {
 			<header class="dcwa-card__head">
 				<span class="dcwa-card__num" data-dcwa-num><?php echo esc_html( (string) ( $index + 1 ) ); ?></span>
 
+				<?php
+				/*
+				 * `readonly` while the card is closed, never `disabled`: a
+				 * disabled control is not submitted, so collapsing a question
+				 * and hitting Save would silently wipe its title. Read-only
+				 * fields post their value exactly as normal ones do.
+				 */
+				?>
 				<input
 					type="text"
 					class="dcwa-card__title"
 					name="<?php echo esc_attr( $name ); ?>[title]"
 					value="<?php echo esc_attr( (string) ( $question['title'] ?? '' ) ); ?>"
 					aria-label="<?php esc_attr_e( 'Question', 'dcw-guide-tools' ); ?>"
+					<?php echo $open ? '' : 'readonly tabindex="-1"'; ?>
 				>
 
 				<input type="hidden" name="<?php echo esc_attr( $name ); ?>[id]" value="<?php echo esc_attr( (string) ( $question['id'] ?? '' ) ); ?>">

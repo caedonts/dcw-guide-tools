@@ -62,14 +62,37 @@
 
 	// ----------------------------------------------------------- accordion
 
+	/**
+	 * Single place that opens or closes a card, so the class, the button's
+	 * aria-expanded and the title's editability can never drift apart.
+	 */
+	function setOpen( card, open ) {
+		card.classList.toggle( 'is-open', open );
+
+		var toggle = card.querySelector( '[data-dcwa-toggle]' );
+
+		if ( toggle ) {
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+		}
+
+		// The heading is only a field while the card is open. `readonly`
+		// rather than `disabled`, because disabled controls are not posted
+		// and every collapsed question would lose its title on save.
+		var title = card.querySelector( '.dcwa-card__title' );
+
+		if ( title ) {
+			title.readOnly = ! open;
+			title.tabIndex = open ? 0 : -1;
+		}
+	}
+
 	root.addEventListener( 'click', function ( event ) {
 		var toggle = event.target.closest( '[data-dcwa-toggle]' );
 
 		if ( toggle ) {
 			var card = cardOf( toggle );
-			var open = card.classList.toggle( 'is-open' );
 
-			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			setOpen( card, ! card.classList.contains( 'is-open' ) );
 			return;
 		}
 
@@ -146,7 +169,7 @@
 
 			var added = list.lastElementChild;
 
-			added.classList.add( 'is-open' );
+			setOpen( added, true );
 
 			var field = added.querySelector( '.dcwa-card__title' );
 
@@ -160,6 +183,32 @@
 
 		if ( event.target.closest( '[data-dcwa-reset]' ) ) {
 			buildTest();
+			return;
+		}
+
+		// ------------------------------------------- click the card itself
+
+		// Runs last, so every button above has already claimed its own click
+		// and returned. Closed, the whole card opens it; open, only the
+		// header row closes it, leaving the matrix free to be worked in.
+		// Anything that is itself a control keeps its click, and a drag that
+		// selected text is not treated as one.
+		var hit = cardOf( event.target );
+
+		if ( ! hit || event.target.closest( 'input, textarea, select, button, label, a' ) ) {
+			return;
+		}
+
+		var selection = window.getSelection();
+
+		if ( selection && ! selection.isCollapsed ) {
+			return;
+		}
+
+		var isOpen = hit.classList.contains( 'is-open' );
+
+		if ( ! isOpen || event.target.closest( '.dcwa-card__head' ) ) {
+			setOpen( hit, ! isOpen );
 		}
 	} );
 
