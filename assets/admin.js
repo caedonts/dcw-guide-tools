@@ -235,12 +235,19 @@
 	function readModel() {
 		var categories = [];
 
-		root.querySelectorAll( '.dcwa-matrix__head .dcwa-matrix__col' ).forEach( function ( col ) {
-			categories.push( {
-				label: col.textContent.trim(),
-				color: col.querySelector( '.dcwa-dot' ) ? col.querySelector( '.dcwa-dot' ).style.background : '#999'
+		// Every question repeats the same category columns, so read them from
+		// the first matrix only — querying the whole screen would return one
+		// set per question and render four bars per card.
+		var head = root.querySelector( '.dcwa-matrix__head' );
+
+		if ( head ) {
+			head.querySelectorAll( '.dcwa-matrix__col' ).forEach( function ( col ) {
+				categories.push( {
+					label: col.textContent.trim(),
+					color: col.querySelector( '.dcwa-dot' ) ? col.querySelector( '.dcwa-dot' ).style.background : '#999'
+				} );
 			} );
-		} );
+		}
 
 		var questions = [];
 
