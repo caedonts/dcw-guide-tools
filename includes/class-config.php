@@ -47,8 +47,21 @@ class Config {
 
 		if ( is_array( $overrides ) && $overrides ) {
 			foreach ( $overrides as $key => $override ) {
-				if ( isset( $defaults[ $key ] ) && is_array( $override ) ) {
-					$defaults[ $key ] = array_replace_recursive( $defaults[ $key ], $override );
+				if ( ! isset( $defaults[ $key ] ) || ! is_array( $override ) ) {
+					continue;
+				}
+
+				// `questions` is an ordered list, so it must be replaced
+				// wholesale. A recursive merge matches by index, which means
+				// deleting question 2 of 3 would leave question 3's data
+				// merged onto question 2's slot — silent corruption.
+				$questions = $override['questions'] ?? null;
+				unset( $override['questions'] );
+
+				$defaults[ $key ] = array_replace_recursive( $defaults[ $key ], $override );
+
+				if ( is_array( $questions ) ) {
+					$defaults[ $key ]['questions'] = $questions;
 				}
 			}
 		}

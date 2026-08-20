@@ -1,0 +1,846 @@
+/**
+ * Finder admin — the Alt B design from Notes/Finder Admin Design.md.
+ *
+ * Values measured from the Trustwards plugin's own admin: white ground, Inter,
+ * #11A8FF as the single primary, a 4/6/8px radius ladder and exactly one
+ * shadow. Scoped under .dcwa so nothing here escapes into wp-admin at large.
+ */
+
+.dcwa {
+  --dcwa-blue: #11A8FF;
+  --dcwa-ink: #181818;
+  --dcwa-body: #3C434A;
+  --dcwa-muted: #666666;
+  --dcwa-line: #DCE0E6;
+  --dcwa-rule: #ECF0F6;
+  --dcwa-ground: #F7F7F8;
+  --dcwa-green-bg: #D7F7C2;
+  --dcwa-green-line: #A6EB84;
+  --dcwa-green-ink: #006908;
+  --dcwa-red: #E61847;
+  --dcwa-red-bg: #FEF4F6;
+  --dcwa-red-line: #FBD3DC;
+  --dcwa-shadow: 0 1px 2px 0 rgba(13, 19, 30, 0.10);
+
+  display: flex;
+  align-items: stretch;
+  margin-left: -20px;
+  min-height: calc(100vh - 32px);
+  background: #FFFFFF;
+  font-family: Inter, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--dcwa-body);
+}
+
+.dcwa * {
+  box-sizing: border-box;
+}
+
+
+/* ------------------------------------------------------------ Plugin nav */
+
+.dcwa__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+  width: 200px;
+  padding: 30px 20px;
+  border-right: 1px solid var(--dcwa-rule);
+}
+
+.dcwa__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--dcwa-muted);
+  text-decoration: none;
+}
+
+.dcwa__nav-item:hover,
+.dcwa__nav-item:focus {
+  color: var(--dcwa-ink);
+  box-shadow: none;
+}
+
+.dcwa__nav-item.is-current,
+.dcwa__nav-item.is-current:hover {
+  color: var(--dcwa-blue);
+  font-weight: 600;
+}
+
+.dcwa__nav-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+}
+
+.dcwa__nav-item.is-current .dcwa__nav-dot {
+  background: currentColor;
+}
+
+.dcwa__nav-label {
+  margin: 20px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-muted);
+}
+
+.dcwa__nav-note {
+  font-size: 11px;
+  color: #B9B7AD;
+}
+
+
+/* -------------------------------------------------------------- Content */
+
+.dcwa__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 30px;
+}
+
+.dcwa__saved {
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--dcwa-green-ink);
+  background: var(--dcwa-green-bg);
+  border: 1px solid var(--dcwa-green-line);
+  border-radius: 6px;
+}
+
+.dcwa__crumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--dcwa-muted);
+}
+
+.dcwa__crumb-mark {
+  width: 16px;
+  height: 3px;
+  background: var(--dcwa-ink);
+  border-radius: 2px;
+  box-shadow: 0 5px 0 0 var(--dcwa-ink), 0 -5px 0 0 var(--dcwa-ink);
+}
+
+.dcwa__crumb-sep {
+  color: #999999;
+}
+
+.dcwa__title {
+  margin: 18px 0 0;
+  padding: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 39px;
+  color: var(--dcwa-ink);
+}
+
+.dcwa__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 24px;
+}
+
+.dcwa__save {
+  padding: 7px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+  background: var(--dcwa-blue);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dcwa__save:hover {
+  background: #0099FE;
+}
+
+.dcwa__chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: 14px;
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+  box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa__chip-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dcwa__chip-hint {
+  font-size: 12px;
+  color: var(--dcwa-muted);
+}
+
+.dcwa__empty {
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 21px;
+  background: var(--dcwa-ground);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 8px;
+}
+
+.dcwa__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.dcwa__main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dcwa__rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  width: 320px;
+}
+
+.dcwa__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.dcwa-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+
+/* ---------------------------------------------------------- Question card */
+
+.dcwa-card {
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 8px;
+  box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+}
+
+.dcwa-card__num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dcwa-muted);
+  background: #FFFFFF;
+  border: 1.5px solid var(--dcwa-line);
+  border-radius: 999px;
+}
+
+.dcwa-card__num--icon {
+  border: 0;
+}
+
+.dcwa-card__num--icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.dcwa-card__static {
+  flex: 1 1 auto;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-ink);
+}
+
+/* The editable heading. Reads as a heading until you reach for it, then
+   behaves like the field it is. */
+.dcwa-card__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-ink);
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+
+.dcwa-card.is-open .dcwa-card__title {
+  border-color: #8C8F94;
+}
+
+.dcwa-card__title:focus {
+  border-color: var(--dcwa-blue);
+  outline: 2px solid rgba(17, 168, 255, 0.25);
+  outline-offset: 0;
+}
+
+.dcwa-card__body {
+  display: none;
+  padding: 0 20px 20px;
+}
+
+.dcwa-card.is-open .dcwa-card__body {
+  display: block;
+}
+
+.dcwa-card.is-open .dcwa-icon[data-dcwa-toggle] svg {
+  transform: rotate(180deg);
+}
+
+.dcwa-card__note {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--dcwa-muted);
+}
+
+
+/* -------------------------------------------------------------- Icon buttons */
+
+.dcwa-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  color: #999999;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dcwa-icon svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.15s ease;
+}
+
+.dcwa-icon:hover {
+  color: var(--dcwa-ink);
+  background: var(--dcwa-ground);
+}
+
+.dcwa-icon--danger:hover {
+  color: var(--dcwa-red);
+  background: var(--dcwa-red-bg);
+}
+
+.dcwa-icon--sm {
+  width: 24px;
+  height: 24px;
+}
+
+.dcwa-icon--sm svg {
+  width: 13px;
+  height: 13px;
+}
+
+
+/* ------------------------------------------------------------- Matrix */
+
+.dcwa-matrix__head,
+.dcwa-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dcwa-matrix__head {
+  padding-bottom: 8px;
+}
+
+.dcwa-matrix__lead {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-matrix__col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 78px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dcwa-muted);
+  text-align: center;
+}
+
+.dcwa-matrix__col .dcwa-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.dcwa-matrix__end {
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.dcwa-row {
+  padding: 6px 0;
+  border-top: 1px solid var(--dcwa-rule);
+}
+
+.dcwa-row--note {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.dcwa-row__label,
+.dcwa-row__note {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 34px;
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--dcwa-body);
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+.dcwa-row__note {
+  font-size: 13px;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-row__points {
+  width: 78px;
+  height: 34px;
+  flex-shrink: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--dcwa-body);
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+  -moz-appearance: textfield;
+}
+
+.dcwa-row__points::-webkit-outer-spin-button,
+.dcwa-row__points::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* The answer's strongest pull, so the bias of a row is readable at a glance. */
+.dcwa-row__points.is-best {
+  font-weight: 700;
+  color: var(--dcwa-green-ink);
+  background: var(--dcwa-green-bg);
+  border-color: var(--dcwa-green-line);
+}
+
+.dcwa-row__points.is-zero {
+  color: #999999;
+  background: var(--dcwa-ground);
+}
+
+.dcwa-row__gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 78px;
+  height: 34px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.dcwa-row__gate input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.dcwa-row__gate-box {
+  width: 20px;
+  height: 20px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--dcwa-line);
+  border-radius: 5px;
+}
+
+.dcwa-row__gate input:checked ~ .dcwa-row__gate-box {
+  background: var(--dcwa-red-bg);
+  border-color: var(--dcwa-red);
+  box-shadow: inset 0 0 0 3px var(--dcwa-red-bg), inset 0 0 0 10px var(--dcwa-red);
+}
+
+.dcwa-row__gate input:focus-visible ~ .dcwa-row__gate-box {
+  outline: 2px solid var(--dcwa-blue);
+  outline-offset: 2px;
+}
+
+
+/* ------------------------------------------------------------ Add buttons */
+
+.dcwa__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 11px 20px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-blue);
+  background: none;
+  border: 1px dashed var(--dcwa-line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dcwa__add:hover {
+  border-color: var(--dcwa-blue);
+  background: rgba(17, 168, 255, 0.04);
+}
+
+.dcwa__add--sm {
+  justify-content: flex-start;
+  width: auto;
+  margin-top: 12px;
+  padding: 6px 0;
+  border: 0;
+  font-size: 13px;
+}
+
+.dcwa__add--sm:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+
+/* ------------------------------------------------------------ Result copy */
+
+.dcwa-copy + .dcwa-copy {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--dcwa-rule);
+}
+
+.dcwa-copy__head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.dcwa-copy__label {
+  flex: 1 1 auto;
+  height: 34px;
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dcwa-ink);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+.dcwa-copy__field {
+  display: block;
+  margin-top: 10px;
+}
+
+.dcwa-copy__field > span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-copy__field textarea,
+.dcwa-copy__field input[type="text"],
+.dcwa-copy__field select {
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--dcwa-body);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+
+/* ------------------------------------------------------------- Test rail */
+
+.dcwa-panel {
+  padding: 20px;
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 8px;
+  box-shadow: var(--dcwa-shadow);
+}
+
+.dcwa-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dcwa-panel__head h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-ink);
+}
+
+.dcwa-panel__reset {
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dcwa-muted);
+  background: #FFFFFF;
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dcwa-panel__sub,
+.dcwa-panel__text {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-panel__label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-panel__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.dcwa-test__field > span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-test__field select {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--dcwa-body);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+.dcwa-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dcwa-result > div {
+  flex: 1 1 auto;
+}
+
+.dcwa-result__kicker {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dcwa-muted);
+}
+
+.dcwa-result__name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dcwa-ink);
+}
+
+.dcwa-result__pts {
+  padding: 2px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dcwa-green-ink);
+  background: var(--dcwa-green-bg);
+  border: 1px solid var(--dcwa-green-line);
+  border-radius: 4px;
+}
+
+.dcwa-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.dcwa-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dcwa-bar__name {
+  width: 88px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--dcwa-body);
+}
+
+.dcwa-bar.is-best .dcwa-bar__name {
+  font-weight: 700;
+  color: var(--dcwa-ink);
+}
+
+.dcwa-bar__track {
+  flex: 1 1 auto;
+  height: 6px;
+  background: var(--dcwa-rule);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dcwa-bar__fill {
+  height: 6px;
+  border-radius: 999px;
+}
+
+.dcwa-bar__val {
+  width: 18px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  color: var(--dcwa-body);
+}
+
+.dcwa-panel__note {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--dcwa-muted);
+  background: var(--dcwa-ground);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+.dcwa-panel__note:empty {
+  display: none;
+}
+
+.dcwa-code {
+  display: block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--dcwa-ink);
+  background: var(--dcwa-ground);
+  border: 1px solid var(--dcwa-line);
+  border-radius: 6px;
+}
+
+
+/* ---------------------------------------------------------------- Narrow */
+
+@media (max-width: 1200px) {
+  .dcwa__body {
+    flex-direction: column;
+  }
+
+  .dcwa__rail {
+    width: 100%;
+  }
+}
+
+@media (max-width: 782px) {
+  .dcwa {
+    margin-left: -10px;
+  }
+
+  .dcwa__nav {
+    display: none;
+  }
+
+  .dcwa__content {
+    padding: 16px;
+  }
+
+  .dcwa-matrix__head {
+    display: none;
+  }
+
+  .dcwa-row {
+    flex-wrap: wrap;
+  }
+
+  .dcwa-row__label {
+    flex: 1 1 100%;
+  }
+}

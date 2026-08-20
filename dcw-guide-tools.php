@@ -3,7 +3,7 @@
  * Plugin Name:       DCW Guide Tools
  * Plugin URI:        https://github.com/caedonts/dcw-guide-tools
  * Description:       Equipment finder for the Dependable Coffee &amp; Water buying guides. Renders a multi-step quiz that recommends a system category, exposed as a native Bricks element and a shortcode.
- * Version:           0.1.3
+ * Version:           0.2.0
  * Requires at least: 6.4
  * Requires PHP:      8.0
  * Author:            Surefaze
@@ -19,7 +19,7 @@ namespace DCW\GuideTools;
 
 defined( 'ABSPATH' ) || exit;
 
-const VERSION = '0.1.3';
+const VERSION = '0.2.0';
 
 /**
  * The GitHub repository this plugin updates from.
@@ -38,7 +38,7 @@ require_once PLUGIN_DIR . 'includes/class-scorer.php';
 require_once PLUGIN_DIR . 'includes/class-renderer.php';
 require_once PLUGIN_DIR . 'includes/class-assets.php';
 require_once PLUGIN_DIR . 'includes/class-shortcode.php';
-require_once PLUGIN_DIR . 'includes/class-settings.php';
+require_once PLUGIN_DIR . 'includes/class-admin.php';
 require_once PLUGIN_DIR . 'includes/class-updater.php';
 
 /**
@@ -50,7 +50,7 @@ require_once PLUGIN_DIR . 'includes/class-updater.php';
 function boot(): void {
 	Assets::init();
 	Shortcode::init();
-	Settings::init();
+	Admin::init();
 	Updater::init();
 
 	// Bricks registers custom elements on `init`, after the theme has declared
