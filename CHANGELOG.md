@@ -19,6 +19,10 @@ deployed by zip — so there is no reason to cut a release per fix.
   as soon as someone types). Tighter rhythm between fields, and between the
   submit and "Also book a call".
 
+### Removed
+- The per-question hint line ("Answering moves you to the next question." /
+  "This one filters the options rather than scoring them.").
+
 ### Fixed
 - Suppressed the platform tap-highlight flash on the finder. iOS and Android
   paint it on whichever element receives the tap, so it is set on the root and

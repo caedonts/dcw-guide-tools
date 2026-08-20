@@ -86,9 +86,8 @@ class Renderer {
 	 * One question slide.
 	 */
 	private static function render_question( string $uid, array $question, int $index, int $total ): void {
-		$qid    = (string) ( $question['id'] ?? '' );
-		$name   = $uid . '-' . $qid;
-		$is_gate = 'gate' === ( $question['type'] ?? 'score' );
+		$qid  = (string) ( $question['id'] ?? '' );
+		$name = $uid . '-' . $qid;
 		?>
 		<section
 			class="dcw-finder__slide"
@@ -139,13 +138,6 @@ class Renderer {
 					<button type="button" class="dcw-finder__back" data-dcw-back <?php echo 0 === $index ? 'hidden' : ''; ?>>
 						<span aria-hidden="true">&lsaquo;</span> <?php esc_html_e( 'Back', 'dcw-guide-tools' ); ?>
 					</button>
-					<p class="dcw-finder__hint">
-						<?php
-						echo $is_gate
-							? esc_html__( 'This one filters the options rather than scoring them.', 'dcw-guide-tools' )
-							: esc_html__( 'Answering moves you to the next question.', 'dcw-guide-tools' );
-						?>
-					</p>
 				</div>
 			</fieldset>
 		</section>

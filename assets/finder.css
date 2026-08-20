@@ -69,10 +69,14 @@
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
-  padding: 36px 36px 32px;
   background-color: var(--dcw-finder-bone);
   border-radius: var(--dcw-finder-radius-sm);
 }
+
+/* No padding on the stage, deliberately. `overflow: hidden` clips at the
+   PADDING box, not the content box — so padding here would hand the next slide
+   a 36px window to peek through at the right edge. The inset lives on the
+   panel inside instead, where it cannot widen the clip. */
 
 .dcw-finder__track {
   display: flex;
@@ -96,7 +100,7 @@
   flex-direction: column;
   height: 100%;
   margin: 0;
-  padding: 0;
+  padding: 36px 36px 32px;
   background-color: transparent;
   border: 0;
   border-radius: 0;
@@ -239,16 +243,6 @@
 .dcw-finder__back:hover {
   color: var(--dcw-finder-navy);
 }
-
-.dcw-finder__hint {
-  margin: 0;
-  color: var(--dcw-finder-muted);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 16px;
-  text-align: right;
-}
-
 
 /* ---------------------------------------------------------- Progress rail */
 
@@ -727,14 +721,20 @@
   font-weight: 600;
 }
 
-/* With the labels gone the default 20px gutter between groups reads as a lot
-   of empty navy. */
-.dcw-result__form .fluentform .ff-el-group {
-  margin-bottom: 10px;
+/* Field rhythm.
+
+   Two different wrappers carry the fields: a name row is
+   `.ff-field_container.ff-name-field-wrapper`, everything else is
+   `.ff-el-group`. The name row has no margin of its own — the gap you used to
+   see there was the visible labels' own height, so hiding the labels removed
+   it and nothing replaced it. Both wrappers are spaced explicitly now. */
+.dcw-result__form .fluentform .ff-el-group,
+.dcw-result__form .fluentform .ff-field_container {
+  margin-bottom: 12px;
 }
 
-.dcw-result__form .fluentform .ff-el-group:last-child,
-.dcw-result__form .fluentform .ff-el-group.ff-text-left,
+/* The submit sits flush; its spacing to "Also book a call" is set on that
+   element instead. */
 .dcw-result__form .fluentform .ff_submit_btn_wrapper {
   margin-bottom: 0;
 }
@@ -929,8 +929,7 @@
     border-radius: var(--dcw-finder-radius-sm);
   }
 
-  /* Padding follows the background onto the stage. */
-  .dcw-finder__stage {
+  .dcw-finder__panel {
     padding: 24px 20px;
   }
 
@@ -945,10 +944,6 @@
 
   .dcw-finder__option-label {
     font-size: 16px;
-  }
-
-  .dcw-finder__hint {
-    display: none;
   }
 
   .dcw-result__top,
