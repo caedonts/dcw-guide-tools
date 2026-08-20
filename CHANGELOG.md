@@ -9,6 +9,8 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
+## 0.4.1 — 2026-08-20
+
 ### Added
 - A "Press Enter to lock in your answer" hint that fades in after a keyboard
   selection, in the spot the old static hint used to occupy. It is
