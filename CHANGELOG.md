@@ -9,16 +9,6 @@ deployed by zip — so there is no reason to cut a release per fix.
 
 ## Unreleased
 
-### Changed
-- The quiz's bone panel is painted on the static stage instead of on each
-  slide, so a transition no longer drags a rounded box across the viewport —
-  only the content moves, and the stage's rounded corners clip it.
-- The result form reads as Paper draws it: field names sit inside the fields as
-  placeholders and the labels are visually hidden (kept in the DOM and
-  associated, because a placeholder is a weak accessible name that disappears
-  as soon as someone types). Tighter rhythm between fields, and between the
-  submit and "Also book a call".
-
 ### Added
 - Keyboard users choose and commit separately. In a native radio group the
   arrow keys select as they move, so auto-advancing on selection made it
@@ -28,21 +18,35 @@ deployed by zip — so there is no reason to cut a release per fix.
   committing means revealing the result. A screen-reader-only line in each
   question says so, and the live region confirms each selection.
 
+### Changed
+- Asset cache-busting uses each file's modification time instead of the plugin
+  version. `VERSION` was the only thing busting the browser cache on staging
+  (where `WP_DEBUG` is off), so every deploy needed a version bump just to see
+  the change — which made every fix look like it wanted its own release.
+  `VERSION` now means one thing: the released version.
+- The quiz's bone panel is painted on the static stage instead of on each
+  slide, so a transition no longer drags a rounded box across the viewport —
+  only the content moves, and the stage's rounded corners clip it.
+- The result form reads as Paper draws it: field names sit inside the fields as
+  placeholders and the labels are visually hidden (kept in the DOM and
+  associated, because a placeholder is a weak accessible name that disappears
+  as soon as someone types). The fields and the two CTAs each sit on a 12px
+  rhythm with a 24px break between the groups.
+
 ### Removed
 - The per-question hint line ("Answering moves you to the next question." /
   "This one filters the options rather than scoring them.").
 
 ### Fixed
-- Suppressed the platform tap-highlight flash on the finder. iOS and Android
-  paint it on whichever element receives the tap, so it is set on the root and
-  on labels, buttons, links and inputs.
-
-### Changed
-- Asset cache-busting now uses each file's modification time instead of the
-  plugin version. Previously `VERSION` was the only thing busting the browser
-  cache on staging (where `WP_DEBUG` is off), so every deploy needed a version
-  bump just to see the change — which made every fix look like it wanted its
-  own release. `VERSION` now means one thing: the released version.
+- The platform tap-highlight flash on the finder. iOS and Android paint it on
+  whichever element receives the tap, so it is suppressed on the root and on
+  labels, buttons, links and inputs.
+- The next slide could peek through the right edge of the quiz panel:
+  `overflow: hidden` clips at the padding box, not the content box, so padding
+  on the clipping element widened the window.
+- Gaps between the result form's fields. A Fluent Forms name row is
+  `.ff-field_container`, not `.ff-el-group`, so the spacing rule never reached
+  it — and the gap that had been there was the visible labels' own height.
 
 ## 0.3.2 — 2026-08-20
 
