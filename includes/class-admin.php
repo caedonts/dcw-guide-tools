@@ -57,8 +57,9 @@ class Admin {
 		$dir = PLUGIN_DIR . 'assets/';
 		$url = PLUGIN_URL . 'assets/';
 
+		// Modification time, not VERSION — see Assets::version() for why.
 		$ver = static function ( string $path ): string {
-			return ( defined( 'WP_DEBUG' ) && WP_DEBUG && file_exists( $path ) ) ? (string) filemtime( $path ) : VERSION;
+			return file_exists( $path ) ? (string) filemtime( $path ) : VERSION;
 		};
 
 		wp_enqueue_style( self::HANDLE, $url . 'admin.css', [], $ver( $dir . 'admin.css' ) );

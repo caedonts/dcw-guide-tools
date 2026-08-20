@@ -57,14 +57,15 @@ class Assets {
 	}
 
 	/**
-	 * Cache-bust on file modification time in development, plugin version in
-	 * production. Avoids the classic "my CSS change isn't showing" loop.
+	 * Cache-bust on the file's modification time, not the plugin version.
+	 *
+	 * Tying this to VERSION meant every deploy to staging needed a version bump
+	 * purely so the browser would fetch the new CSS — which in turn made every
+	 * fix look like it wanted its own release. The mtime changes on every
+	 * deploy for free, so VERSION is left to mean one thing only: the version
+	 * that has been released. Falls back to VERSION if the file is missing.
 	 */
 	private static function version( string $path ): string {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && file_exists( $path ) ) {
-			return (string) filemtime( $path );
-		}
-
-		return VERSION;
+		return file_exists( $path ) ? (string) filemtime( $path ) : VERSION;
 	}
 }
